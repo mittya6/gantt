@@ -61,32 +61,27 @@
     <div class="flex items-center justify-center mb-4">
         <button
             class="text-purple-500 bg-transparent border-l border-t border-b border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 rounded-l outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-            onclick="gantt.change_view_mode('Quarter Day')"
-            type="button">
+            onclick="gantt.change_view_mode('Quarter Day')" type="button">
             Quarter Day
         </button>
         <button
             class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-            onclick="gantt.change_view_mode('Half Day')"
-            type="button">
+            onclick="gantt.change_view_mode('Half Day')" type="button">
             Half Day
         </button>
         <button
             class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-            onclick="gantt.change_view_mode('Day')"
-            type="button">
+            onclick="gantt.change_view_mode('Day')" type="button">
             Day
         </button>
         <button
             class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-            onclick="gantt.change_view_mode('Week')"
-            type="button">
+            onclick="gantt.change_view_mode('Week')" type="button">
             Week
         </button>
         <button
             class="text-purple-500 bg-transparent border-t border-b border-r border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 rounded-r outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-            onclick="gantt.change_view_mode('Month')"
-            type="button">
+            onclick="gantt.change_view_mode('Month')" type="button">
             Month
         </button>
     </div>
@@ -117,6 +112,18 @@
                 curForm.elements['enddate'].value = dayjs(task._end).format('YYYY-MM-DD');
                 curForm.elements['progress'].value = task.progress;
                 curForm.elements['taskId'].value = task.id;
+                let dependenciesSelect = curForm.elements['dependencies'];
+                dependenciesSelect.options.length = 0;
+                let positionSelect = curForm.elements['position'];
+                positionSelect.options.length = 0;
+                positionSelect.appendChild(new Option('TOP', '0'));
+
+                const position = tasks.findIndex((curTask)=> curTask.id == task.id) -1;
+                tasks.filter((curTask)=> curTask.id != task.id).forEach((curTask,i) => {
+                    dependenciesSelect.appendChild(new Option(curTask.name, curTask.id,task.dependencies.includes(curTask.id) ,task.dependencies.includes(curTask.id)));
+                    console.log(position + ':' + i)
+                    positionSelect.appendChild(new Option(curTask.name, curTask.id, i==position,i==position));
+                });
                 toggleModal();
             },
             on_date_change: function (task, start, end) {
@@ -143,16 +150,16 @@
             curForm.elements['enddate'].value = dayjs(new Date()).format('YYYY-MM-DD');
             curForm.elements['progress'].value = 0;
             curForm.elements['taskId'].value = '';
-            console.log('test');
-
-
             let positionSelect = curForm.elements['position'];
             positionSelect.options.length = 0;
-            
-            tasks.forEach((curTask)=>{
-                positionSelect.appendChild(new Option(curTask.name, curTask.id));
-            });
+            positionSelect.appendChild(new Option('TOP', '0'));
+            let dependenciesSelect = curForm.elements['dependencies'];
+            dependenciesSelect.options.length = 0;
 
+            tasks.forEach((curTask) => {
+                positionSelect.appendChild(new Option(curTask.name, curTask.id));
+                dependenciesSelect.appendChild(new Option(curTask.name, curTask.id));
+            });
 
             toggleModal();
         });
@@ -284,6 +291,10 @@
                                 <option>Option 4</option>
                                 <option>Option 5</option>
                             </select>
+                            <button id="clear"
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Clear
+                            </button>
                         </div>
                     </div>
 
@@ -367,37 +378,47 @@
             body.classList.toggle('modal-active');
         }
 
-        const tarApply = document.querySelector('#apply');
-        tarApply.addEventListener('click', apply);
+        const tarClear = document.querySelector('#clear');
+        tarClear.addEventListener('click', (event) => {
+            
+        });
 
-        function apply(event) {
+        const tarApply = document.querySelector('#apply');
+        tarApply.addEventListener('click', (event) => {
             event.preventDefault();
 
             let curForm = document.forms['inputform'];
             let tarId = curForm.elements['taskId'].value;
-            if (tarId) {
-                const tarTask = tasks.find(element => element.id == tarId);
 
-                tarTask.name = curForm.elements['taskname'].value;
-                tarTask.start = curForm.elements['startdate'].value;
-                tarTask.end = curForm.elements['enddate'].value;
-                tarTask.progress = curForm.elements['progress'].value
+            // 対象タスクを抽出。なければ新規作成
+            let tarTask;
+            if (tarId) {
+                tarTask = tasks.find(element => element.id == tarId);
             } else {
                 const maxTasks = tasks.reduce((a, b) => Math.max(a.id, b.id));
+                tarTask = { id: maxTasks ? String(Number(maxTasks.id) + 1) : '1' };
 
-                const task = {
-                    id: maxTasks ? String(Number(maxTasks.id) + 1) : '1',
-                    name: curForm.elements['taskname'].value,
-                    start: curForm.elements['startdate'].value,
-                    end: curForm.elements['enddate'].value,
-                    progress: curForm.elements['progress'].value
-                }
-                tasks.push(task);
             }
+            // 対象タスクに各種値の設定
+            tarTask.name = curForm.elements['taskname'].value;
+            tarTask.start = curForm.elements['startdate'].value;
+            tarTask.end = curForm.elements['enddate'].value;
+            tarTask.progress = curForm.elements['progress'].value;
+            const dependenciesOptions = document.querySelectorAll('select[name="dependencies"] option:checked');
+            const dependencies = [...dependenciesOptions].map((curOption) => curOption.value);
+            tarTask.dependencies = dependencies.join(",");
+
+            // ポジションを入れ替えるため、対象タスクを配列から除去
+            tasks = tasks.filter((curTask)=> curTask.id != tarTask.id);
+            // 指定したポジションに挿入
+            const underTaskId = document.querySelector('select[name="position"] option:checked').value;
+            const position = tasks.findIndex((curTask)=> curTask.id == underTaskId);
+            tasks.splice( position + 1, 0, tarTask) ;
+
             gantt.refresh(tasks);
             toggleModal();
 
-        }
+        });
 
 
 
