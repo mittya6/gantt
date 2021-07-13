@@ -60,16 +60,6 @@
 
     <div class="flex items-center justify-center mb-4">
         <button
-            class="text-purple-500 bg-transparent border-l border-t border-b border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 rounded-l outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-            onclick="gantt.change_view_mode('Quarter Day')" type="button">
-            Quarter Day
-        </button>
-        <button
-            class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
-            onclick="gantt.change_view_mode('Half Day')" type="button">
-            Half Day
-        </button>
-        <button
             class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
             onclick="gantt.change_view_mode('Day')" type="button">
             Day
@@ -104,27 +94,8 @@
         ];
         var gantt = new Gantt('#gantt', tasks, {
             on_click: (task) => {
-                console.log(task);
+                toggleTask(task);
 
-                let curForm = document.forms['inputform'];
-                curForm.elements['taskname'].value = task.name;
-                curForm.elements['startdate'].value = dayjs(task._start).format('YYYY-MM-DD');
-                curForm.elements['enddate'].value = dayjs(task._end).format('YYYY-MM-DD');
-                curForm.elements['progress'].value = task.progress;
-                curForm.elements['taskId'].value = task.id;
-                let dependenciesSelect = curForm.elements['dependencies'];
-                dependenciesSelect.options.length = 0;
-                let positionSelect = curForm.elements['position'];
-                positionSelect.options.length = 0;
-                positionSelect.appendChild(new Option('TOP', '0'));
-
-                const position = tasks.findIndex((curTask)=> curTask.id == task.id) -1;
-                tasks.filter((curTask)=> curTask.id != task.id).forEach((curTask,i) => {
-                    dependenciesSelect.appendChild(new Option(curTask.name, curTask.id,task.dependencies.includes(curTask.id) ,task.dependencies.includes(curTask.id)));
-                    console.log(position + ':' + i)
-                    positionSelect.appendChild(new Option(curTask.name, curTask.id, i==position,i==position));
-                });
-                toggleModal();
             },
             on_date_change: function (task, start, end) {
                 //console.log(task, start, end);
@@ -144,25 +115,40 @@
         newTask.addEventListener('click', () => {
             event.preventDefault();
 
+            toggleTask(
+                {
+                    id:'',
+                    name:'',
+                    _start:  dayjs(new Date()).format('YYYY-MM-DD'),
+                    _end: dayjs(new Date()).add(2,'day').format('YYYY-MM-DD'),
+                    progress: 0,
+                    dependencies:[]
+                }
+            );
+        });
+
+        function toggleTask(tarTask) {
             let curForm = document.forms['inputform'];
-            curForm.elements['taskname'].value = '';
-            curForm.elements['startdate'].value = dayjs(new Date()).format('YYYY-MM-DD');
-            curForm.elements['enddate'].value = dayjs(new Date()).format('YYYY-MM-DD');
-            curForm.elements['progress'].value = 0;
-            curForm.elements['taskId'].value = '';
+            curForm.elements['taskname'].value = tarTask.name;
+            curForm.elements['startdate'].value = dayjs(tarTask._start).format('YYYY-MM-DD');
+            curForm.elements['enddate'].value = dayjs(tarTask._end).add(-1,'day').format('YYYY-MM-DD');
+            curForm.elements['progress'].value = tarTask.progress;
+            curForm.elements['taskId'].value = tarTask.id;
+            let dependenciesSelect = curForm.elements['dependencies'];
+            dependenciesSelect.options.length = 0;
             let positionSelect = curForm.elements['position'];
             positionSelect.options.length = 0;
             positionSelect.appendChild(new Option('TOP', '0'));
-            let dependenciesSelect = curForm.elements['dependencies'];
-            dependenciesSelect.options.length = 0;
 
-            tasks.forEach((curTask) => {
-                positionSelect.appendChild(new Option(curTask.name, curTask.id));
-                dependenciesSelect.appendChild(new Option(curTask.name, curTask.id));
+            let position = tasks.findIndex((curTask) => curTask.id == tarTask.id) - 1;
+            position = position<0?tasks.length-1:position;
+            tasks.filter((curTask) => curTask.id != tarTask.id).
+                    forEach((curTask, i) => {
+                dependenciesSelect.appendChild(new Option(curTask.name, curTask.id, tarTask.dependencies.includes(curTask.id), tarTask.dependencies.includes(curTask.id)));
+                positionSelect.appendChild(new Option(curTask.name, curTask.id, i == position, i == position));
             });
-
             toggleModal();
-        });
+        }
 
         const save = document.querySelector('#save');
         save.addEventListener('click', () => {
@@ -173,7 +159,7 @@
                     id: curTask.id,
                     name: curTask.name,
                     start: dayjs(curTask._start).format('YYYY-MM-DD'),
-                    end: dayjs(curTask._end).format('YYYY-MM-DD'),
+                    end: dayjs(curTask._end).add(-1,'day').format('YYYY-MM-DD'),
                     progress: curTask.progress
                 }
             });
@@ -194,7 +180,6 @@
 
             };
             reader.readAsText(tarFile);
-
         });
 
 
@@ -380,7 +365,7 @@
 
         const tarClear = document.querySelector('#clear');
         tarClear.addEventListener('click', (event) => {
-            
+
         });
 
         const tarApply = document.querySelector('#apply');
@@ -409,11 +394,11 @@
             tarTask.dependencies = dependencies.join(",");
 
             // ポジションを入れ替えるため、対象タスクを配列から除去
-            tasks = tasks.filter((curTask)=> curTask.id != tarTask.id);
+            tasks = tasks.filter((curTask) => curTask.id != tarTask.id);
             // 指定したポジションに挿入
             const underTaskId = document.querySelector('select[name="position"] option:checked').value;
-            const position = tasks.findIndex((curTask)=> curTask.id == underTaskId);
-            tasks.splice( position + 1, 0, tarTask) ;
+            const position = tasks.findIndex((curTask) => curTask.id == underTaskId);
+            tasks.splice(position + 1, 0, tarTask);
 
             gantt.refresh(tasks);
             toggleModal();
