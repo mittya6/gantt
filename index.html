@@ -32,33 +32,7 @@
     <div>
         <svg id="gantt"></svg>
     </div>
-
-    <button
-        class="bg-transparent border border-gray-500 hover:border-indigo-500 text-gray-500 hover:text-indigo-500 font-bold py-2 px-4 rounded-full"
-        id="newTask">
-        New Task
-    </button>
-
-    <button
-        class="bg-transparent border border-gray-500 hover:border-indigo-500 text-gray-500 hover:text-indigo-500 font-bold py-2 px-4 rounded-full"
-        id="Save">
-        Save
-    </button>
-
-    <label
-        class="w-64 flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-white">
-        <svg class="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path
-                d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-        </svg>
-        <span class="mt-2 text-base leading-normal">Load</span>
-        <input type='file' class="hidden" id="Load" />
-    </label>
-
-
-
-
-    <div class="flex items-center justify-center mb-4">
+    <div class="flex mb-4 ml-8">
         <button
             class="text-purple-500 bg-transparent border border-solid border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold text-xs px-4 py-2 outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
             onclick="gantt.change_view_mode('Day')" type="button">
@@ -77,6 +51,26 @@
     </div>
 
 
+    <button
+        class="bg-transparent border border-gray-500 hover:border-indigo-500 text-gray-500 hover:text-indigo-500 font-bold py-2 px-4 rounded-full"
+        id="newTask">
+        New Task
+    </button>
+    <div>
+        <button
+            class="bg-transparent border border-gray-500 hover:border-indigo-500 text-gray-500 hover:text-indigo-500 font-bold py-2 px-4 rounded-full"
+            id="Save">
+            Save
+        </button>
+
+
+        <label
+            class="bg-transparent border border-gray-500 hover:border-indigo-500 text-gray-500 hover:text-indigo-500 font-bold py-2 px-4 rounded-full">
+            Load
+            <input type='file' class="hidden" id="Load" />
+        </label>
+    </div>
+
 
 
 
@@ -86,9 +80,9 @@
         var tasks = [
             {
                 id: '1',
-                name: 'Redesign website',
-                start: '2021-06-28',
-                end: '2021-06-31',
+                name: 'サンプル',
+                start: dayjs(new Date()).format('YYYY-MM-DD'),
+                end: dayjs(new Date()).add(1, 'day').format('YYYY-MM-DD'),
                 progress: 20
             }
         ];
@@ -117,12 +111,12 @@
 
             toggleTask(
                 {
-                    id:'',
-                    name:'',
-                    _start:  dayjs(new Date()).format('YYYY-MM-DD'),
-                    _end: dayjs(new Date()).add(2,'day').format('YYYY-MM-DD'),
+                    id: '',
+                    name: '',
+                    _start: dayjs(new Date()).format('YYYY-MM-DD'),
+                    _end: dayjs(new Date()).add(2, 'day').format('YYYY-MM-DD'),
                     progress: 0,
-                    dependencies:[]
+                    dependencies: []
                 }
             );
         });
@@ -131,7 +125,7 @@
             let curForm = document.forms['inputform'];
             curForm.elements['taskname'].value = tarTask.name;
             curForm.elements['startdate'].value = dayjs(tarTask._start).format('YYYY-MM-DD');
-            curForm.elements['enddate'].value = dayjs(tarTask._end).add(-1,'day').format('YYYY-MM-DD');
+            curForm.elements['enddate'].value = dayjs(tarTask._end).add(-1, 'day').format('YYYY-MM-DD');
             curForm.elements['progress'].value = tarTask.progress;
             curForm.elements['taskId'].value = tarTask.id;
             let dependenciesSelect = curForm.elements['dependencies'];
@@ -141,12 +135,12 @@
             positionSelect.appendChild(new Option('TOP', '0'));
 
             let position = tasks.findIndex((curTask) => curTask.id == tarTask.id) - 1;
-            position = position<0?tasks.length-1:position;
+            position = position < 0 ? tasks.length - 1 : position;
             tasks.filter((curTask) => curTask.id != tarTask.id).
-                    forEach((curTask, i) => {
-                dependenciesSelect.appendChild(new Option(curTask.name, curTask.id, tarTask.dependencies.includes(curTask.id), tarTask.dependencies.includes(curTask.id)));
-                positionSelect.appendChild(new Option(curTask.name, curTask.id, i == position, i == position));
-            });
+                forEach((curTask, i) => {
+                    dependenciesSelect.appendChild(new Option(curTask.name, curTask.id, tarTask.dependencies.includes(curTask.id), tarTask.dependencies.includes(curTask.id)));
+                    positionSelect.appendChild(new Option(curTask.name, curTask.id, i == position, i == position));
+                });
             toggleModal();
         }
 
@@ -159,8 +153,9 @@
                     id: curTask.id,
                     name: curTask.name,
                     start: dayjs(curTask._start).format('YYYY-MM-DD'),
-                    end: dayjs(curTask._end).add(-1,'day').format('YYYY-MM-DD'),
-                    progress: curTask.progress
+                    end: dayjs(curTask._end).add(-1, 'day').format('YYYY-MM-DD'),
+                    progress: curTask.progress,
+                    dependencies: curTask.dependencies.join(',')
                 }
             });
             let blob = new Blob([JSON.stringify(savedData, null, 2)], { type: "text/json;charset=utf-8" });
@@ -181,8 +176,6 @@
             };
             reader.readAsText(tarFile);
         });
-
-
 
     </script>
 
@@ -271,10 +264,6 @@
                                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                                 name="dependencies" id="grid-dependencies" size='1' multiple>
                                 <option>Option 1</option>
-                                <option>Option 2</option>
-                                <option>Option 3</option>
-                                <option>Option 4</option>
-                                <option>Option 5</option>
                             </select>
                             <button id="clear"
                                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -293,10 +282,6 @@
                                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                                 name="position" id="grid-position">
                                 <option>Top</option>
-                                <option>Option 2</option>
-                                <option>Option 3</option>
-                                <option>Option 4</option>
-                                <option>Option 5</option>
                             </select>
                         </div>
                     </div>
@@ -304,7 +289,8 @@
 
                     <div class="flex flex-wrap -mx-3 mb-6">
                         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                            <button class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <button id="delete"
+                                class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Delete
                             </button>
                         </div>
@@ -403,6 +389,27 @@
             gantt.refresh(tasks);
             toggleModal();
 
+        });
+
+        const tarDelete = document.querySelector('#delete');
+        tarDelete.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            let curForm = document.forms['inputform'];
+            let tarId = curForm.elements['taskId'].value;
+            tasks = tasks.reduce((accumulator, curTask) => {
+                // 対象タスクを除外
+                if (curTask.id == tarId) {
+                    return accumulator;
+                }
+                // dependenciesの参照も除外
+                curTask.dependencies.filter((dependency) => dependency != tarId);
+                accumulator.push(curTask);
+                return accumulator;
+            }, []);
+            console.log(tasks);
+            gantt.refresh(tasks);
+            toggleModal();
         });
 
 
