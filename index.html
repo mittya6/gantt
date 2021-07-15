@@ -349,6 +349,7 @@
         const tarClear = document.querySelector('#clear');
         tarClear.addEventListener('click', (event) => {
 
+
         });
 
         const tarApply = document.querySelector('#apply');
@@ -408,6 +409,13 @@
             toggleModal();
         });
 
+        const buttonClear = document.querySelector('#clear');
+        buttonClear.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            const optionDependencies = document.querySelectorAll('select[name="dependencies"] option:checked');
+            optionDependencies.forEach((curOption) => curOption.selected = false );
+        });
 
 
     </script>
