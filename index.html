@@ -72,9 +72,6 @@
     </div>
 
 
-
-
-
     <script>
         dayjs.locale('ja');
         var tasks = [
@@ -366,9 +363,8 @@
             if (tarId) {
                 tarTask = tasks.find(element => element.id == tarId);
             } else {
-                const maxTasks = tasks.reduce((a, b) => Math.max(a.id, b.id));
+                const maxTasks = tasks.reduce((a, b) => (a.id >b.id)?a:b);
                 tarTask = { id: maxTasks ? String(Number(maxTasks.id) + 1) : '1' };
-
             }
             // 対象タスクに各種値の設定
             tarTask.name = curForm.elements['taskname'].value;
