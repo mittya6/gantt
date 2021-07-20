@@ -25,27 +25,57 @@
     </style>
 </head>
 
-<body class="h-screen flex items-center justify-center">
-    <div class="flex flex-nowrap bg-gray-100 w-screen h-screen">
-        <nav class="w-1/5 bg-white rounded p-3 shadow-lg">
-            <ul class="space-y-2 text-sm">
-                <li>
-                    <button
-                        class="w-28	bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-                        id="newTask">
-                        <span><i class="fas fa-plus-circle"></i> New Task</span>
-                    </button>
-                </li>
-            </ul>
-            <ul class="my-8 space-y-2 text-sm">
-                <li>
+<body class="flex flex-col">
+    <nav class="w-screen bg-white rounded p-3 shadow-lg">
+        <h1 class="ml-4">header</h1>
+    </nav>
+    <div class="p-4">
+        <svg id="gantt"></svg>
+    </div>
+    <nav class="w-screen bg-white rounded p-3 shadow-lg fixed bottom-0 flex justify-between">
+        <div>
+            <button
+                class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                id="newTask">
+                <span><i class="fas fa-plus-circle"></i> New Task</span>
+            </button>
+        </div>
+        <div class="flex">
+            <button class=" rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                hover:bg-teal-200  
+                bg-teal-100 
+                text-blue-700
+                border duration-200 ease-in-out 
+                border-gray-600 transition" onclick="gantt.change_view_mode('Day')" type="button">
+                day
+            </button>
+            <button class="hover:scale-110 focus:outline-none flex justify-center px-4 py-2  font-bold cursor-pointer 
+                hover:bg-teal-200  
+                bg-teal-100 
+                text-teal-700 
+                border duration-200 ease-in-out 
+                border-gray-600 transition" onclick="gantt.change_view_mode('Week')" type="button">
+                week
+            </button>
+            <button class="rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                hover:bg-teal-200  
+                bg-teal-100 
+                text-teal-700 
+                border duration-200 ease-in-out 
+                border-gray-600 transition" onclick="gantt.change_view_mode('Month')" type="button">
+                Month
+            </button>
+        </div>
+        <div>
+            <ul>
+                <li class="inline-block">
                     <button
                         class="text-center w-28 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
                         id="Save">
                         <span><i class="fas fa-download"></i> Save</span>
                     </button>
                 </li>
-                <li>
+                <li class="inline-block">
                     <label
                         class="inline-block text-center w-28 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
                         <span><i class="fas fa-upload"></i> Load</span>
@@ -53,38 +83,8 @@
                     </label>
                 </li>
             </ul>
-            <div class="flex">
-                <button class="text-base  rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-teal-200  
-                bg-teal-100 
-                text-blue-700
-                border duration-200 ease-in-out 
-                border-gray-600 transition" onclick="gantt.change_view_mode('Day')" type="button">
-                    day
-                </button>
-                <button class="text-base   hover:scale-110 focus:outline-none flex justify-center px-4 py-2  font-bold cursor-pointer 
-                hover:bg-teal-200  
-                bg-teal-100 
-                text-teal-700 
-                border duration-200 ease-in-out 
-                border-gray-600 transition" onclick="gantt.change_view_mode('Week')" type="button">
-                    week
-                </button>
-                <button class="text-base  rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-teal-200  
-                bg-teal-100 
-                text-teal-700 
-                border duration-200 ease-in-out 
-                border-gray-600 transition" onclick="gantt.change_view_mode('Month')" type="button">
-                    Month
-                </button>
-            </div>
-        </nav>
-
-        <div class="p-4 w-4/5">
-            <svg id="gantt"></svg>
         </div>
-    </div>
+    </nav>
 
     <script>
         dayjs.locale('ja');
@@ -190,11 +190,11 @@
     </script>
 
 
-    <!-- Modal -->
+    <!-- Modal overlay -->
     <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-
-        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+        <!-- Modal -->
+        <div class="modal-container bg-white w-11/12 md:w-96 mx-auto rounded shadow-lg z-50 overflow-y-auto">
 
             <div
                 class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
