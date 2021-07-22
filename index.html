@@ -26,58 +26,45 @@
 </head>
 
 <body class="flex flex-col">
-    <nav class="w-screen bg-white rounded p-3 shadow-lg">
-        <h1 class="ml-4">header</h1>
+    <nav class="bg-white shadow-lg py-2 mx-8 sticky">
+        <input
+            class="appearance-none text-center rounded w-full  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text" id="title" placeholder="title">
     </nav>
-    <div class="p-4">
+    <div class="px-8">
         <svg id="gantt"></svg>
     </div>
-    <nav class="w-screen bg-white rounded p-3 shadow-lg fixed bottom-0 flex justify-between">
+    <div class="text-right px-8 py-2">
+        <button
+            class="bg-transparent hover:bg-yellow-500 text-yellow-500 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-yellow-500 rounded"
+            id="newTask">
+            <span><i class="fas fa-plus-circle "></i> New Task</span>
+        </button>
+    </div>
+    <nav class="w-screen bg-white rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between">
+
         <div>
-            <button
-                class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-                id="newTask">
-                <span><i class="fas fa-plus-circle"></i> New Task</span>
-            </button>
+            <select 
+            class="border bg-white rounded border-pink-700 px-3 py-2 font-semibold text-pink-700 outline-none rounded"
+            onchange="gantt.change_view_mode(this.value)">
+                <option class="Day">Day</option>
+                <option class="Week">Week</option>
+                <option class="Month">Month</option>
+            </select>
         </div>
-        <div class="flex">
-            <button class=" rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-teal-200  
-                bg-teal-100 
-                text-blue-700
-                border duration-200 ease-in-out 
-                border-gray-600 transition" onclick="gantt.change_view_mode('Day')" type="button">
-                day
-            </button>
-            <button class="hover:scale-110 focus:outline-none flex justify-center px-4 py-2  font-bold cursor-pointer 
-                hover:bg-teal-200  
-                bg-teal-100 
-                text-teal-700 
-                border duration-200 ease-in-out 
-                border-gray-600 transition" onclick="gantt.change_view_mode('Week')" type="button">
-                week
-            </button>
-            <button class="rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-teal-200  
-                bg-teal-100 
-                text-teal-700 
-                border duration-200 ease-in-out 
-                border-gray-600 transition" onclick="gantt.change_view_mode('Month')" type="button">
-                Month
-            </button>
-        </div>
+
         <div>
             <ul>
                 <li class="inline-block">
                     <button
-                        class="text-center w-28 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                        class="text-center w-28 bg-transparent hover:bg-blue-500 text-pink-700 font-semibold hover:text-white py-2 px-4 border border-pink-700 hover:border-transparent rounded"
                         id="Save">
                         <span><i class="fas fa-download"></i> Save</span>
                     </button>
                 </li>
                 <li class="inline-block">
                     <label
-                        class="inline-block text-center w-28 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                        class="inline-block text-center w-28 bg-transparent hover:bg-blue-500 text-pink-700 font-semibold hover:text-white py-2 px-4 border border-pink-700 hover:border-transparent rounded">
                         <span><i class="fas fa-upload"></i> Load</span>
                         <input type='file' class="hidden" id="Load" />
                     </label>
@@ -191,10 +178,10 @@
 
 
     <!-- Modal overlay -->
-    <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+    <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
         <!-- Modal -->
-        <div class="modal-container bg-white w-11/12 md:w-96 mx-auto rounded shadow-lg z-50 overflow-y-auto">
+        <div class="modal-container bg-white w-11/12 mx-auto rounded shadow-lg z-50 ">
 
             <div
                 class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
