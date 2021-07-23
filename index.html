@@ -44,9 +44,9 @@
     <nav class="w-screen bg-white rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between">
 
         <div>
-            <select 
-            class="border bg-white rounded border-pink-700 px-3 py-2 font-semibold text-pink-700 outline-none rounded"
-            onchange="gantt.change_view_mode(this.value)">
+            <select
+                class="border bg-white rounded border-pink-700 px-3 py-2 font-semibold text-pink-700 outline-none rounded"
+                onchange="gantt.change_view_mode(this.value)">
                 <option class="Day">Day</option>
                 <option class="Week">Week</option>
                 <option class="Month">Month</option>
@@ -180,141 +180,127 @@
     <!-- Modal overlay -->
     <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+
+
+        <div
+            class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
+            <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                viewBox="0 0 18 18">
+                <path
+                    d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                </path>
+            </svg>
+            <span class="text-sm">(Esc)</span>
+        </div>
+
         <!-- Modal -->
-        <div class="modal-container bg-white w-11/12 mx-auto rounded shadow-lg z-50 ">
+        <div class="bg-white w-8/12 flex flex-col mx-auto text-center rounded shadow-lg z-50 py-4 px-6 overflow-y-auto">
 
-            <div
-                class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
-                <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                    viewBox="0 0 18 18">
-                    <path
-                        d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
-                    </path>
-                </svg>
-                <span class="text-sm">(Esc)</span>
-            </div>
-
-            <div class="modal-content py-4 text-left px-6">
-
-                <form class="w-full max-w-lg" name="inputform">
-                    <input type="hidden" name="taskId">
-                    <div class="flex flex-wrap -mx-3 mb-6">
-                        <div class="w-full px-3">
-                            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                for="grid-password">
-                                Task Name
-                            </label>
-                            <input
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                name="taskname" id="grid-password" type="text" placeholder="******************">
-                            <p class="text-gray-600 text-xs italic">Make it as long and as crazy as you'd like</p>
-                        </div>
+            <form name="inputform">
+                <input type="hidden" name="taskId">
+                <!-- Task Name -->
+                <div class="mx-auto text-left flex">
+                    <div class="px-3 w-4/5">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            for="grid-password">
+                            Task Name
+                        </label>
+                        <input
+                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            name="taskname" id="grid-password" type="text" placeholder="******************">
                     </div>
-
-                    <div class="flex flex-wrap -mx-3 mb-6">
-                        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                for="grid-startdate">
-                                Start Date
-                            </label>
-                            <input
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                                name="startdate" id="grid-startdate" type="date" placeholder="Jane">
-                            <p class="text-red-500 text-xs italic">Please fill out this field.</p>
-                        </div>
-                        <div class="w-full md:w-1/2 px-3">
-                            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                for="grid-enddate">
-                                End Date
-                            </label>
+                    <div class="px-3 w-1/5">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            for="grid-progress">
+                            Progress
+                        </label>
+                        <div class="relative">
+                            <div class="absolute top-0 left-0 mt-3 ml-1 text-gray-400">%</div>
                             <input
                                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                name="enddate" id="grid-enddate" type="date" placeholder="Doe">
+                                name="progress" id="grid-progress" type="number" placeholder="0">
                         </div>
                     </div>
+                </div>
 
-                    <div class="flex flex-wrap -mx-3 mb-6">
-                        <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                for="grid-progress">
-                                Progress
-                            </label>
-                            <div class="relative">
-                                <div class="absolute top-0 left-0 mt-3 ml-1 text-gray-400">%</div>
-                                <input
-                                    class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                    name="progress" id="grid-progress" type="number" placeholder="0">
-                            </div>
-                        </div>
+                <!-- Start Date, End Date -->
+                <div class="mx-auto text-left flex flex-wrap">
+                    <div class="px-3 mb-6 w-1/2">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            for="grid-startdate">
+                            Start Date
+                        </label>
+                        <input
+                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                            name="startdate" id="grid-startdate" type="date">
+                        <p class="text-red-500 text-xs italic">Please fill out this field.</p>
                     </div>
-
-                    <div class="flex flex-wrap -mx-3 mb-6">
-                        <div class="w-full px-3">
-                            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                for="grid-dependencies">
-                                Dependencies
-                            </label>
-                            <select
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                name="dependencies" id="grid-dependencies" size='1' multiple>
-                                <option>Option 1</option>
-                            </select>
-                            <button id="clear"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Clear
-                            </button>
-                        </div>
+                    <div class="px-3 mb-6 w-1/2">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            for="grid-enddate">
+                            End Date
+                        </label>
+                        <input
+                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            name="enddate" id="grid-enddate" type="date">
                     </div>
+                </div>
 
-                    <div class="flex flex-wrap -mx-3 mb-6">
-                        <div class="w-full px-3">
-                            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                for="grid-position">
-                                Position Under
-                            </label>
-                            <select
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                name="position" id="grid-position">
-                                <option>Top</option>
-                            </select>
-                        </div>
+                <div class="mx-auto text-left flex flex-wrap">
+                    <div class="w-4/5 px-3">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            for="grid-dependencies">
+                            Dependencies
+                        </label>
+                        <select
+                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            name="dependencies" id="grid-dependencies" size='1' multiple>
+                            <option>Option 1</option>
+                        </select>
                     </div>
-
-
-                    <div class="flex flex-wrap -mx-3 mb-6">
-                        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                            <button id="delete"
-                                class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Delete
-                            </button>
-                        </div>
-                        <div class="w-full md:w-1/2 px-3">
-                            <button id="apply"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Apply
-                            </button>
-                        </div>
+                    <div class="w-1/5 px-3">
+                        <button id="clear" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Clear
+                        </button>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="flex flex-wrap -mx-3 mb-6">
+                    <div class="w-full px-3">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            for="grid-position">
+                            Position Under
+                        </label>
+                        <select
+                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            name="position" id="grid-position">
+                            <option>Top</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="flex flex-wrap -mx-3 mb-6">
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <button id="delete" class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Delete
+                        </button>
+                    </div>
+                    <div class="w-full md:w-1/2 px-3">
+                        <button id="apply" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
 
 
     <script>
-        var openmodal = document.querySelectorAll('.modal-open')
-        for (var i = 0; i < openmodal.length; i++) {
-            openmodal[i].addEventListener('click', function (event) {
-                event.preventDefault();
-                toggleModal();
-            })
-        }
 
-        const overlay = document.querySelector('.modal-overlay')
-        overlay.addEventListener('click', toggleModal);
-
-        var closemodal = document.querySelectorAll('.modal-close')
+        var closemodal = document.querySelectorAll('.modal-open, .modal-close, .modal-overlay')
         for (var i = 0; i < closemodal.length; i++) {
             closemodal[i].addEventListener('click', toggleModal);
         }
@@ -332,8 +318,9 @@
             }
         };
 
-
-        function toggleModal() {
+        function toggleModal(event) {
+            event = event || window.event;
+            event.preventDefault();
             const body = document.querySelector('body');
             const modal = document.querySelector('.modal');
             modal.classList.toggle('opacity-0');
@@ -341,14 +328,9 @@
             body.classList.toggle('modal-active');
         }
 
-        const tarClear = document.querySelector('#clear');
-        tarClear.addEventListener('click', (event) => {
 
-
-        });
-
-        const tarApply = document.querySelector('#apply');
-        tarApply.addEventListener('click', (event) => {
+        const buttonApply = document.querySelector('#apply');
+        buttonApply.addEventListener('click', (event) => {
             event.preventDefault();
 
             let curForm = document.forms['inputform'];
@@ -383,8 +365,8 @@
 
         });
 
-        const tarDelete = document.querySelector('#delete');
-        tarDelete.addEventListener('click', (event) => {
+        const buttonDelete = document.querySelector('#delete');
+        buttonDelete.addEventListener('click', (event) => {
             event.preventDefault();
 
             let curForm = document.forms['inputform'];
@@ -399,7 +381,6 @@
                 accumulator.push(curTask);
                 return accumulator;
             }, []);
-            console.log(tasks);
             gantt.refresh(tasks);
             toggleModal();
         });
