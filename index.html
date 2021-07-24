@@ -146,7 +146,7 @@
         save.addEventListener('click', () => {
             event.preventDefault();
 
-            let savedData = tasks.map((curTask) => {
+            let savedGantt = tasks.map((curTask) => {
                 return {
                     id: curTask.id,
                     name: curTask.name,
@@ -156,6 +156,10 @@
                     dependencies: curTask.dependencies.join(',')
                 }
             });
+            let savedData = {
+                title: document.querySelector('#title').value?document.querySelector('#title').value:'',
+                gantt: savedGantt
+            }
             let blob = new Blob([JSON.stringify(savedData, null, 2)], { type: "text/json;charset=utf-8" });
             saveAs(blob, 'gantt.json');
         });
@@ -163,13 +167,13 @@
         const selectElement = document.querySelector('#Load');
         selectElement.addEventListener('change', (event) => {
             var tarFile = event.target.files[0];
-            console.log(tarFile);
 
             let reader = new FileReader();
             reader.onload = function (event) {
                 // ファイルのテキストがここにプリントされる
-                tasks = JSON.parse(event.target.result);
-                gantt.refresh(tasks);
+                savedData = JSON.parse(event.target.result);
+                document.querySelector('#title').value = savedData.title;
+                gantt.refresh(savedData.gantt);
 
             };
             reader.readAsText(tarFile);
@@ -198,7 +202,7 @@
 
             <form name="inputform">
                 <input type="hidden" name="taskId">
-                <!-- Task Name -->
+                <!-- Task Name, Progress -->
                 <div class="mx-auto text-left flex">
                     <div class="px-3 w-4/5">
                         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -225,17 +229,16 @@
 
                 <!-- Start Date, End Date -->
                 <div class="mx-auto text-left flex flex-wrap">
-                    <div class="px-3 mb-6 w-1/2">
+                    <div class="px-3 w-1/2">
                         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             for="grid-startdate">
                             Start Date
                         </label>
                         <input
-                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             name="startdate" id="grid-startdate" type="date">
-                        <p class="text-red-500 text-xs italic">Please fill out this field.</p>
                     </div>
-                    <div class="px-3 mb-6 w-1/2">
+                    <div class="px-3 w-1/2">
                         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             for="grid-enddate">
                             End Date
@@ -246,26 +249,32 @@
                     </div>
                 </div>
 
-                <div class="mx-auto text-left flex flex-wrap">
-                    <div class="w-4/5 px-3">
+                <!-- Dependencies, Clear -->
+                <div class="mx-auto text-left flex items-stretch">
+                    <div class="px-3 w-4/5">
                         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             for="grid-dependencies">
                             Dependencies
                         </label>
                         <select
-                            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            class="appearance-none w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                             name="dependencies" id="grid-dependencies" size='1' multiple>
                             <option>Option 1</option>
                         </select>
                     </div>
-                    <div class="w-1/5 px-3">
-                        <button id="clear" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <div class="px-3 w-1/5">
+                        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            for="grid-progress">
+                            &nbsp;
+                        </label>
+                        <button id="clear"
+                            class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Clear
                         </button>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap -mx-3 mb-6">
+                <div class="mx-auto text-left flex items-stretch">
                     <div class="w-full px-3">
                         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             for="grid-position">
@@ -278,7 +287,6 @@
                         </select>
                     </div>
                 </div>
-
 
                 <div class="flex flex-wrap -mx-3 mb-6">
                     <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -299,7 +307,6 @@
 
 
     <script>
-
         var closemodal = document.querySelectorAll('.modal-open, .modal-close, .modal-overlay')
         for (var i = 0; i < closemodal.length; i++) {
             closemodal[i].addEventListener('click', toggleModal);
@@ -334,8 +341,36 @@
             event.preventDefault();
 
             let curForm = document.forms['inputform'];
-            let tarId = curForm.elements['taskId'].value;
 
+            // validate taskname
+            if (!curForm.elements['taskname'].value) {
+                curForm.elements['taskname'].classList.remove("border-gray-200");
+                curForm.elements['taskname'].classList.add("border-pink-700");
+                return;
+            } else {
+                curForm.elements['taskname'].classList.add("border-gray-200");
+                curForm.elements['taskname'].classList.remove("border-pink-700");
+            }
+            //validate start date, end date
+            if (curForm.elements['startdate'].value >= curForm.elements['enddate'].value) {
+                curForm.elements['startdate'].classList.remove("border-gray-200");
+                curForm.elements['startdate'].classList.add("border-pink-700");
+
+                curForm.elements['enddate'].classList.remove("border-gray-200");
+                curForm.elements['enddate'].classList.add("border-pink-700");
+                return;
+            }else{
+                curForm.elements['startdate'].classList.add("border-gray-200");
+                curForm.elements['startdate'].classList.remove("border-pink-700");
+
+                curForm.elements['enddate'].classList.add("border-gray-200");
+                curForm.elements['enddate'].classList.remove("border-pink-700");
+            }
+
+
+
+            // タスクIDの取得
+            let tarId = curForm.elements['taskId'].value;
             // 対象タスクを抽出。なければ新規作成
             let tarTask;
             if (tarId) {
@@ -362,7 +397,6 @@
 
             gantt.refresh(tasks);
             toggleModal();
-
         });
 
         const buttonDelete = document.querySelector('#delete');
