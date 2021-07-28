@@ -47,6 +47,8 @@
             <select
                 class="border bg-white rounded border-pink-700 px-3 py-2 font-semibold text-pink-700 outline-none rounded"
                 onchange="gantt.change_view_mode(this.value)">
+                <option class="Quarter Day">Quarter Day</option>
+                <option class="Half Day">Half Day</option>
                 <option class="Day">Day</option>
                 <option class="Week">Week</option>
                 <option class="Month">Month</option>
@@ -86,7 +88,6 @@
         ];
         let gantt = new Gantt('#gantt', tasks, {
             on_click: (task) => {
-                toggleTask(task);
             },
             on_date_change: function (task, start, end) {
                 //console.log(task, start, end);
@@ -98,15 +99,16 @@
                 //console.log(mode);
             },
             custom_popup_html: function (task) {
+                toggleTask(task);
                 return '';
             }
         });
+        console.log(gantt);
 
-
+        // new Task
         const newTask = document.querySelector('#newTask');
         newTask.addEventListener('click', () => {
             event.preventDefault();
-
             toggleTask(
                 {
                     id: '',
@@ -122,8 +124,14 @@
         function toggleTask(tarTask) {
             let curForm = document.forms['inputform'];
             curForm.elements['taskname'].value = tarTask.name;
-            curForm.elements['startdate'].value = dayjs(tarTask._start).format('YYYY-MM-DD');
-            curForm.elements['enddate'].value = dayjs(tarTask._end).add(-1, 'day').format('YYYY-MM-DD');
+            let startDate = format(tarTask._start, FORMAT.INPUT_START);
+            curForm.elements['startdate'].type = startDate.length <= 10 ? 'date' : 'datetime-local';
+            curForm.elements['startdate'].value = startDate;
+            curForm.elements['startOption'].value = curForm.elements['startdate'].type;
+            let endDate = format(tarTask._end, FORMAT.INPUT_END);
+            curForm.elements['enddate'].type = endDate.length <= 10 ? 'date' : 'datetime-local';
+            curForm.elements['enddate'].value = format(tarTask._end, FORMAT.INPUT_END);
+            curForm.elements['endOption'].value = curForm.elements['enddate'].type;
             curForm.elements['progress'].value = tarTask.progress;
             curForm.elements['taskId'].value = tarTask.id;
             let dependenciesSelect = curForm.elements['dependencies'];
@@ -150,19 +158,51 @@
                 return {
                     id: curTask.id,
                     name: curTask.name,
-                    start: dayjs(curTask._start).format('YYYY-MM-DD'),
-                    end: dayjs(curTask._end).add(-1, 'day').format('YYYY-MM-DD'),
+                    start: format(curTask._start, FORMAT.TASK_START),
+                    end: format(curTask._end, FORMAT.TASK_END),
                     progress: curTask.progress,
                     dependencies: curTask.dependencies.join(',')
                 }
+
             });
             let savedData = {
-                title: document.querySelector('#title').value?document.querySelector('#title').value:'',
+                title: document.querySelector('#title').value ? document.querySelector('#title').value : '',
                 gantt: savedGantt
             }
             let blob = new Blob([JSON.stringify(savedData, null, 2)], { type: "text/json;charset=utf-8" });
             saveAs(blob, 'gantt.json');
         });
+
+        let FORMAT = {
+            TASK_START: {
+                DATE_FORMAT: 'YYYY-MM-DD',
+                DATETIME_FORMAT: 'YYYY-MM-DD HH:mm',
+                OFFSET: 0
+            },
+            TASK_END: {
+                DATE_FORMAT: 'YYYY-MM-DD',
+                DATETIME_FORMAT: 'YYYY-MM-DD HH:mm',
+                OFFSET: -1
+            },
+            INPUT_START: {
+                DATE_FORMAT: 'YYYY-MM-DD',
+                DATETIME_FORMAT: 'YYYY-MM-DDTHH:mm',
+                OFFSET: 0
+            },
+            INPUT_END: {
+                DATE_FORMAT: 'YYYY-MM-DD',
+                DATETIME_FORMAT: 'YYYY-MM-DDTHH:mm',
+                OFFSET: -1
+            }
+        }
+
+        function format(tarDate, format) {
+            let tarDayjs = dayjs(tarDate);
+            if (tarDayjs.hour() == 0 && tarDayjs.minute() == 0) {
+                return tarDayjs.add(format.OFFSET, 'day').format(format.DATE_FORMAT);
+            }
+            return tarDayjs.format(format.DATETIME_FORMAT);
+        }
 
         const selectElement = document.querySelector('#Load');
         selectElement.addEventListener('change', (event) => {
@@ -174,7 +214,7 @@
                 savedData = JSON.parse(event.target.result);
                 document.querySelector('#title').value = savedData.title;
                 gantt.refresh(savedData.gantt);
-
+                tasks = savedData.gantt;
             };
             reader.readAsText(tarFile);
         });
@@ -184,7 +224,6 @@
     <!-- Modal overlay -->
     <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
-
 
         <div
             class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
@@ -232,7 +271,17 @@
                     <div class="px-3 w-1/2">
                         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             for="grid-startdate">
-                            Start Date
+                            Start
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" class="form-radio" name="startOption" value="date"
+                                onchange="optionChange('grid-startdate','date')">
+                            <span class="ml-2">Date</span>
+                        </label>
+                        <label class="inline-flex items-center ml-6">
+                            <input type="radio" class="form-radio" name="startOption" value="datetime-local"
+                                onchange="optionChange('grid-startdate','datetime-local')">
+                            <span class="ml-2">Date time</span>
                         </label>
                         <input
                             class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -241,7 +290,17 @@
                     <div class="px-3 w-1/2">
                         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             for="grid-enddate">
-                            End Date
+                            End
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" class="form-radio" name="endOption" value="date"
+                                onchange="optionChange('grid-enddate','date')">
+                            <span class="ml-2">Date</span>
+                        </label>
+                        <label class="inline-flex items-center ml-6">
+                            <input type="radio" class="form-radio" name="endOption" value="datetime-local"
+                                onchange="optionChange('grid-enddate','datetime-local')">
+                            <span class="ml-2">Date time</span>
                         </label>
                         <input
                             class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -312,6 +371,26 @@
             closemodal[i].addEventListener('click', toggleModal);
         }
 
+        //画面上でdate ←→ datetimeを切り替えたときの処理。
+        function optionChange(tarId, type) {
+            const tarInput = document.getElementById(tarId);
+            let tarDayjs;
+            if (tarInput.type == 'date') {
+                tarDayjs = dayjs(tarInput.value, "YYYY-MM-DD");
+
+            } else {
+                tarDayjs = dayjs(tarInput.value, "YYYY-MM-DDTHH:mm");
+
+            }
+            if (type == 'date') {
+                tarInput.type = type;
+                tarInput.value = tarDayjs.format("YYYY-MM-DD");
+            } else {
+                tarInput.type = type;
+                tarInput.value = tarDayjs.format("YYYY-MM-DDTHH:mm");
+            }
+        }
+
         document.onkeydown = function (evt) {
             evt = evt || window.event;
             var isEscape = false
@@ -359,7 +438,7 @@
                 curForm.elements['enddate'].classList.remove("border-gray-200");
                 curForm.elements['enddate'].classList.add("border-pink-700");
                 return;
-            }else{
+            } else {
                 curForm.elements['startdate'].classList.add("border-gray-200");
                 curForm.elements['startdate'].classList.remove("border-pink-700");
 
@@ -381,8 +460,18 @@
             }
             // 対象タスクに各種値の設定
             tarTask.name = curForm.elements['taskname'].value;
-            tarTask.start = curForm.elements['startdate'].value;
-            tarTask.end = curForm.elements['enddate'].value;
+            if (curForm.elements['startOption'].value == 'date') {
+                tarTask.start = curForm.elements['startdate'].value;
+            } else {
+                let tarDayjs = dayjs(curForm.elements['startdate'].value, "YYYY-MM-DDTHH:mm");
+                tarTask.start = tarDayjs.format("YYYY-MM-DD HH:mm");
+            }
+            if (curForm.elements['endOption'].value == 'date') {
+                tarTask.end = curForm.elements['enddate'].value;
+            } else {
+                let tarDayjs = dayjs(curForm.elements['enddate'].value, "YYYY-MM-DDTHH:mm");
+                tarTask.end = tarDayjs.format("YYYY-MM-DD HH:mm");
+            }
             tarTask.progress = curForm.elements['progress'].value;
             const dependenciesOptions = document.querySelectorAll('select[name="dependencies"] option:checked');
             const dependencies = [...dependenciesOptions].map((curOption) => curOption.value);
