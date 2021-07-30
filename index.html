@@ -26,11 +26,74 @@
 </head>
 
 <body class="flex flex-col">
-    <nav class="bg-white shadow-lg py-2 mx-8 sticky">
+    <nav class="bg-white shadow-lg py-2 mx-8 mb-4">
         <input
-            class="appearance-none text-center rounded w-full  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            class="appearance-none rounded w-full  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text" id="title" placeholder="title">
     </nav>
+    <nav class="mx-8">
+        <div>
+            <div class="flex m-2" id="durationButtons">
+
+                <button class="rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                hover:bg-gray-900
+                bg-gray-700 
+                text-sm text-gray-50 
+                border duration-200 ease-in-out 
+                border-gray-900 transition" onclick="gantt.change_view_mode(this.innerText)">
+                    Quarter Day
+                </button>
+                <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                hover:bg-gray-900 
+                bg-gray-700 
+                text-sm	text-gray-50 
+                border duration-200 ease-in-out 
+                border-gray-700 transition">
+                    Half Day
+                </button>
+                <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                hover:bg-gray-900 
+                bg-gray-900 
+                text-sm	text-gray-50 
+                border duration-200 ease-in-out 
+                border-gray-700 transition">
+                    Day
+                </button>
+                <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                hover:bg-gray-900 
+                bg-gray-700 
+                text-sm	text-gray-50 
+                border duration-200 ease-in-out 
+                border-gray-700 transition">
+                    Week
+                </button>
+                <button class="rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                hover:bg-gray-900
+                bg-gray-700 
+                text-sm	text-gray-50 
+                border duration-200 ease-in-out 
+                border-gray-700 transition">
+                    Month
+                </button>
+            </div>
+        </div>
+    </nav>
+    <script>
+        let buttons = document.querySelectorAll("#durationButtons button");
+        buttons.forEach((curButton) => {
+            curButton.addEventListener('click', () => {
+                let tarButtons = document.querySelectorAll("#durationButtons button");
+                tarButtons.forEach((tarButton) => {
+                    tarButton.classList.remove('bg-gray-900');
+                    tarButton.classList.add('bg-gray-700');
+                });
+
+                curButton.classList.remove('bg-gray-700');
+                curButton.classList.add('bg-gray-900');
+                gantt.change_view_mode(curButton.innerText);
+            })
+        })
+    </script>
     <div class="px-8">
         <svg id="gantt"></svg>
     </div>
@@ -43,17 +106,6 @@
     </div>
     <nav class="w-screen bg-white rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between">
 
-        <div>
-            <select
-                class="border bg-white rounded border-pink-700 px-3 py-2 font-semibold text-pink-700 outline-none rounded"
-                onchange="gantt.change_view_mode(this.value)">
-                <option class="Quarter Day">Quarter Day</option>
-                <option class="Half Day">Half Day</option>
-                <option class="Day">Day</option>
-                <option class="Week">Week</option>
-                <option class="Month">Month</option>
-            </select>
-        </div>
 
         <div>
             <ul>
@@ -87,18 +139,24 @@
             }
         ];
         let gantt = new Gantt('#gantt', tasks, {
+            language:'zh',
             on_click: (task) => {
+
             },
             on_date_change: function (task, start, end) {
+
                 //console.log(task, start, end);
             },
             on_progress_change: function (task, progress) {
+
                 //console.log(task, progress);
             },
             on_view_change: function (mode) {
                 //console.log(mode);
             },
             custom_popup_html: function (task) {
+                event.stopPropagation();
+
                 toggleTask(task);
                 return '';
             }
@@ -219,7 +277,6 @@
             reader.readAsText(tarFile);
         });
     </script>
-
 
     <!-- Modal overlay -->
     <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center">
@@ -515,8 +572,6 @@
             const optionDependencies = document.querySelectorAll('select[name="dependencies"] option:checked');
             optionDependencies.forEach((curOption) => curOption.selected = false);
         });
-
-
     </script>
 </body>
 
