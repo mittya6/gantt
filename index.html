@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.js"></script>
     <style>
         .modal {
             transition: opacity 0.25s ease;
@@ -26,87 +28,110 @@
 </head>
 
 <body class="flex flex-col">
-    <nav class="bg-white shadow-lg py-2 mx-8 mb-4">
+    <nav class="flex bg-white shadow-lg py-2 mx-8 mb-4">
         <input
-            class="appearance-none rounded w-full  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            class="appearance-none rounded flex-1  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text" id="title" placeholder="title">
-    </nav>
-    <nav class="mx-8">
-        <div>
-            <div class="flex m-2" id="durationButtons">
-
-                <button class="rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-gray-900
-                bg-gray-700 
-                text-sm text-gray-50 
-                border duration-200 ease-in-out 
-                border-gray-900 transition" onclick="gantt.change_view_mode(this.innerText)">
-                    Quarter Day
-                </button>
-                <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-gray-900 
-                bg-gray-700 
-                text-sm	text-gray-50 
-                border duration-200 ease-in-out 
-                border-gray-700 transition">
-                    Half Day
-                </button>
-                <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-gray-900 
-                bg-gray-900 
-                text-sm	text-gray-50 
-                border duration-200 ease-in-out 
-                border-gray-700 transition">
-                    Day
-                </button>
-                <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-gray-900 
-                bg-gray-700 
-                text-sm	text-gray-50 
-                border duration-200 ease-in-out 
-                border-gray-700 transition">
-                    Week
-                </button>
-                <button class="rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
-                hover:bg-gray-900
-                bg-gray-700 
-                text-sm	text-gray-50 
-                border duration-200 ease-in-out 
-                border-gray-700 transition">
-                    Month
-                </button>
-            </div>
-        </div>
-    </nav>
-    <script>
-        let buttons = document.querySelectorAll("#durationButtons button");
-        buttons.forEach((curButton) => {
-            curButton.addEventListener('click', () => {
-                let tarButtons = document.querySelectorAll("#durationButtons button");
-                tarButtons.forEach((tarButton) => {
-                    tarButton.classList.remove('bg-gray-900');
-                    tarButton.classList.add('bg-gray-700');
-                });
-
-                curButton.classList.remove('bg-gray-700');
-                curButton.classList.add('bg-gray-900');
-                gantt.change_view_mode(curButton.innerText);
-            })
-        })
-    </script>
-    <div class="px-8">
-        <svg id="gantt"></svg>
-    </div>
-    <div class="text-right px-8 py-2">
-        <button
-            class="bg-transparent hover:bg-yellow-500 text-yellow-500 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-yellow-500 rounded"
-            id="newTask">
-            <span><i class="fas fa-plus-circle "></i> New Task</span>
+        <button class="ml-4 hover:scale-110 focus:outline-none flex justify-center px-4 py-2  font-bold cursor-pointer 
+            rounded rounded-r-none
+            hover:bg-gray-900
+            bg-gray-700 
+            text-sm text-gray-50 
+            border duration-200 ease-in-out 
+            border-gray-900 transition"
+            onclick="document.querySelector('#main_calendar').classList.add('invisible','absolute');document.querySelector('#main_gantt').classList.remove('invisible','absolute');gantt.refresh(tasks)">
+            Gantt
         </button>
-    </div>
+        <button class="hover:scale-110 focus:outline-none flex justify-center px-4 py-2 font-bold cursor-pointer 
+            rounded rounded-l-none 
+            hover:bg-gray-900
+            bg-gray-700 
+            text-sm	text-gray-50 
+            border duration-200 ease-in-out 
+            border-gray-700 transition"
+            onclick="document.querySelector('#main_gantt').classList.add('invisible','absolute');document.querySelector('#main_calendar').classList.remove('invisible','absolute');">
+            Calendar
+        </button>
+    </nav>
+
+    <main id="main_gantt" class="px-8">
+        <nav>
+            <div>
+                <div class="flex m-2" id="durationButtons">
+                    <button class="hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    hover:bg-gray-900
+                    bg-gray-700 
+                    text-sm text-gray-50 
+                    border duration-200 ease-in-out 
+                    border-gray-900 transition" id="newTask">
+                        New Task
+                    </button>
+
+                    <button class="ml-4 rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    hover:bg-gray-900
+                    bg-gray-700 
+                    text-sm text-gray-50 
+                    border duration-200 ease-in-out 
+                    border-gray-900 transition">
+                        Quarter Day
+                    </button>
+                    <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    hover:bg-gray-900 
+                    bg-gray-700 
+                    text-sm	text-gray-50 
+                    border duration-200 ease-in-out 
+                    border-gray-700 transition">
+                        Half Day
+                    </button>
+                    <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    hover:bg-gray-900 
+                    bg-gray-900 
+                    text-sm	text-gray-50 
+                    border duration-200 ease-in-out 
+                    border-gray-700 transition">
+                        Day
+                    </button>
+                    <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    hover:bg-gray-900 
+                    bg-gray-700 
+                    text-sm	text-gray-50 
+                    border duration-200 ease-in-out 
+                    border-gray-700 transition">
+                        Week
+                    </button>
+                    <button class="rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    hover:bg-gray-900
+                    bg-gray-700 
+                    text-sm	text-gray-50 
+                    border duration-200 ease-in-out 
+                    border-gray-700 transition">
+                        Month
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <script>
+            let buttons = document.querySelectorAll("#durationButtons button");
+            buttons.forEach((curButton) => {
+                curButton.addEventListener('click', () => {
+                    let tarButtons = document.querySelectorAll("#durationButtons button");
+                    tarButtons.forEach((tarButton) => {
+                        tarButton.classList.remove('bg-gray-900');
+                        tarButton.classList.add('bg-gray-700');
+                    });
+
+                    curButton.classList.remove('bg-gray-700');
+                    curButton.classList.add('bg-gray-900');
+                    gantt.change_view_mode(curButton.innerText);
+                })
+            });
+        </script>
+        <svg id="gantt"></svg>
+    </main>
+    <main id="main_calendar" class="px-8 invisible">
+        <div id='calendar'></div>
+    </main>
     <nav class="w-screen bg-white rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between">
-
-
         <div>
             <ul>
                 <li class="inline-block">
@@ -138,17 +163,16 @@
                 progress: 20
             }
         ];
-        let gantt = new Gantt('#gantt', tasks, {
-            language:'zh',
-            on_click: (task) => {
 
+        // initialize Gantt 
+        let gantt = new Gantt('#gantt', tasks, {
+            language: 'zh',
+            on_click: (task) => {
             },
             on_date_change: function (task, start, end) {
-
                 //console.log(task, start, end);
             },
             on_progress_change: function (task, progress) {
-
                 //console.log(task, progress);
             },
             on_view_change: function (mode) {
@@ -156,12 +180,81 @@
             },
             custom_popup_html: function (task) {
                 event.stopPropagation();
-
                 toggleTask(task);
                 return '';
             }
         });
-        console.log(gantt);
+
+        // initialize Calendar 
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'custom1 dayGridMonth,timeGridWeek,timeGridDay,listMonth today',
+                    center: 'title',
+                    right: 'prevYear,prev,next,nextYear'
+                },
+                navLinks: true,
+                businessHours: true,
+                editable: true,
+                locale: 'ja',
+                customButtons: {
+                    custom1: {
+                        text: 'New Task',
+                        click: function () {
+                            toggleTask(
+                                {
+                                    id: '',
+                                    name: '',
+                                    _start: dayjs(new Date()).format('YYYY-MM-DD'),
+                                    _end: dayjs(new Date()).add(2, 'day').format('YYYY-MM-DD'),
+                                    progress: 0,
+                                    dependencies: []
+                                }
+                            );
+                        }
+                    }
+                },
+                events: tasiksForCalendar(tasks),
+                eventClick: function (info) {
+                    console.log(info.event);
+
+                    console.log(dayjs(info.event.end).add(2, 'day').toDate());
+                    if (!info.event.end) {
+                        info.event.setEnd(dayjs(info.event.start).add(2, 'day').toDate());
+                    } else {
+                        info.event.setEnd(dayjs(info.event.end).add(2, 'day').toDate());
+
+                    }
+                    //https://fullcalendar.io/docs/Calendar-getEvents
+                    //削除する場合
+                    //info.event.remove();
+                }
+            });
+
+            calendar.render();
+            calendar.on('dateClick', function (info) {
+                toggleTask(task);
+
+                console.log('clicked on ' + info.dateStr);
+            });
+        });
+
+        function tasiksForCalendar(tasks) {
+            return tasks.map((curTask) => {
+                curTask.title = curTask.name;
+                if(curTask.end){
+                    if(curTask.end.length >10){
+                        curTask.end = dayjs(curTask.end, "YYYY-MM-DD HH:mm").format("YYYY-MM-DDTHH:mm");
+                    }else{
+                        curTask.end = dayjs(curTask.end, "YYYY-MM-DD").add(1,'day').format("YYYY-MM-DD");
+
+                    }
+                }
+                return curTask;
+            });
+        }
 
         // new Task
         const newTask = document.querySelector('#newTask');
@@ -279,7 +372,7 @@
     </script>
 
     <!-- Modal overlay -->
-    <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center">
+    <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center z-50">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
 
         <div
