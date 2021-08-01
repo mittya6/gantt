@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.js"></script>
+    <script src="./index.js"></script>
+
     <style>
         .modal {
             transition: opacity 0.25s ease;
@@ -67,7 +69,7 @@
                         New Task
                     </button>
 
-                    <button class="ml-4 rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    <button name="ganttDuration" class="ml-4 rounded-r-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
                     hover:bg-gray-900
                     bg-gray-700 
                     text-sm text-gray-50 
@@ -75,7 +77,7 @@
                     border-gray-900 transition">
                         Quarter Day
                     </button>
-                    <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    <button name="ganttDuration" class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
                     hover:bg-gray-900 
                     bg-gray-700 
                     text-sm	text-gray-50 
@@ -83,7 +85,7 @@
                     border-gray-700 transition">
                         Half Day
                     </button>
-                    <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    <button name="ganttDuration" class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
                     hover:bg-gray-900 
                     bg-gray-900 
                     text-sm	text-gray-50 
@@ -91,7 +93,7 @@
                     border-gray-700 transition">
                         Day
                     </button>
-                    <button class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    <button name="ganttDuration" class="rounded-l-none rounded-r-none border-l-0 border-r-0  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
                     hover:bg-gray-900 
                     bg-gray-700 
                     text-sm	text-gray-50 
@@ -99,7 +101,7 @@
                     border-gray-700 transition">
                         Week
                     </button>
-                    <button class="rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+                    <button name="ganttDuration" class="rounded-l-none  hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
                     hover:bg-gray-900
                     bg-gray-700 
                     text-sm	text-gray-50 
@@ -110,22 +112,6 @@
                 </div>
             </div>
         </nav>
-        <script>
-            let buttons = document.querySelectorAll("#durationButtons button");
-            buttons.forEach((curButton) => {
-                curButton.addEventListener('click', () => {
-                    let tarButtons = document.querySelectorAll("#durationButtons button");
-                    tarButtons.forEach((tarButton) => {
-                        tarButton.classList.remove('bg-gray-900');
-                        tarButton.classList.add('bg-gray-700');
-                    });
-
-                    curButton.classList.remove('bg-gray-700');
-                    curButton.classList.add('bg-gray-900');
-                    gantt.change_view_mode(curButton.innerText);
-                })
-            });
-        </script>
         <svg id="gantt"></svg>
     </main>
     <main id="main_calendar" class="px-8 invisible">
@@ -151,225 +137,6 @@
             </ul>
         </div>
     </nav>
-
-    <script>
-        dayjs.locale('ja');
-        let tasks = [
-            {
-                id: '1',
-                name: 'サンプル',
-                start: dayjs(new Date()).format('YYYY-MM-DD'),
-                end: dayjs(new Date()).add(1, 'day').format('YYYY-MM-DD'),
-                progress: 20
-            }
-        ];
-
-        // initialize Gantt 
-        let gantt = new Gantt('#gantt', tasks, {
-            language: 'zh',
-            on_click: (task) => {
-            },
-            on_date_change: function (task, start, end) {
-                //console.log(task, start, end);
-            },
-            on_progress_change: function (task, progress) {
-                //console.log(task, progress);
-            },
-            on_view_change: function (mode) {
-                //console.log(mode);
-            },
-            custom_popup_html: function (task) {
-                event.stopPropagation();
-                toggleTask(task);
-                return '';
-            }
-        });
-
-        // initialize Calendar 
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                headerToolbar: {
-                    left: 'custom1 dayGridMonth,timeGridWeek,timeGridDay,listMonth today',
-                    center: 'title',
-                    right: 'prevYear,prev,next,nextYear'
-                },
-                navLinks: true,
-                businessHours: true,
-                editable: true,
-                locale: 'ja',
-                customButtons: {
-                    custom1: {
-                        text: 'New Task',
-                        click: function () {
-                            toggleTask(
-                                {
-                                    id: '',
-                                    name: '',
-                                    _start: dayjs(new Date()).format('YYYY-MM-DD'),
-                                    _end: dayjs(new Date()).add(2, 'day').format('YYYY-MM-DD'),
-                                    progress: 0,
-                                    dependencies: []
-                                }
-                            );
-                        }
-                    }
-                },
-                events: tasiksForCalendar(tasks),
-                eventClick: function (info) {
-                    console.log(info.event);
-
-                    console.log(dayjs(info.event.end).add(2, 'day').toDate());
-                    if (!info.event.end) {
-                        info.event.setEnd(dayjs(info.event.start).add(2, 'day').toDate());
-                    } else {
-                        info.event.setEnd(dayjs(info.event.end).add(2, 'day').toDate());
-
-                    }
-                    //https://fullcalendar.io/docs/Calendar-getEvents
-                    //削除する場合
-                    //info.event.remove();
-                }
-            });
-
-            calendar.render();
-            calendar.on('dateClick', function (info) {
-                toggleTask(task);
-
-                console.log('clicked on ' + info.dateStr);
-            });
-        });
-
-        function tasiksForCalendar(tasks) {
-            return tasks.map((curTask) => {
-                curTask.title = curTask.name;
-                if(curTask.end){
-                    if(curTask.end.length >10){
-                        curTask.end = dayjs(curTask.end, "YYYY-MM-DD HH:mm").format("YYYY-MM-DDTHH:mm");
-                    }else{
-                        curTask.end = dayjs(curTask.end, "YYYY-MM-DD").add(1,'day').format("YYYY-MM-DD");
-
-                    }
-                }
-                return curTask;
-            });
-        }
-
-        // new Task
-        const newTask = document.querySelector('#newTask');
-        newTask.addEventListener('click', () => {
-            event.preventDefault();
-            toggleTask(
-                {
-                    id: '',
-                    name: '',
-                    _start: dayjs(new Date()).format('YYYY-MM-DD'),
-                    _end: dayjs(new Date()).add(2, 'day').format('YYYY-MM-DD'),
-                    progress: 0,
-                    dependencies: []
-                }
-            );
-        });
-
-        function toggleTask(tarTask) {
-            let curForm = document.forms['inputform'];
-            curForm.elements['taskname'].value = tarTask.name;
-            let startDate = format(tarTask._start, FORMAT.INPUT_START);
-            curForm.elements['startdate'].type = startDate.length <= 10 ? 'date' : 'datetime-local';
-            curForm.elements['startdate'].value = startDate;
-            curForm.elements['startOption'].value = curForm.elements['startdate'].type;
-            let endDate = format(tarTask._end, FORMAT.INPUT_END);
-            curForm.elements['enddate'].type = endDate.length <= 10 ? 'date' : 'datetime-local';
-            curForm.elements['enddate'].value = format(tarTask._end, FORMAT.INPUT_END);
-            curForm.elements['endOption'].value = curForm.elements['enddate'].type;
-            curForm.elements['progress'].value = tarTask.progress;
-            curForm.elements['taskId'].value = tarTask.id;
-            let dependenciesSelect = curForm.elements['dependencies'];
-            dependenciesSelect.options.length = 0;
-            let positionSelect = curForm.elements['position'];
-            positionSelect.options.length = 0;
-            positionSelect.appendChild(new Option('TOP', '0'));
-
-            let position = tasks.findIndex((curTask) => curTask.id == tarTask.id) - 1;
-            position = position < 0 ? tasks.length - 1 : position;
-            tasks.filter((curTask) => curTask.id != tarTask.id).
-                forEach((curTask, i) => {
-                    dependenciesSelect.appendChild(new Option(curTask.name, curTask.id, tarTask.dependencies.includes(curTask.id), tarTask.dependencies.includes(curTask.id)));
-                    positionSelect.appendChild(new Option(curTask.name, curTask.id, i == position, i == position));
-                });
-            toggleModal();
-        }
-
-        const save = document.querySelector('#Save');
-        save.addEventListener('click', () => {
-            event.preventDefault();
-
-            let savedGantt = tasks.map((curTask) => {
-                return {
-                    id: curTask.id,
-                    name: curTask.name,
-                    start: format(curTask._start, FORMAT.TASK_START),
-                    end: format(curTask._end, FORMAT.TASK_END),
-                    progress: curTask.progress,
-                    dependencies: curTask.dependencies.join(',')
-                }
-
-            });
-            let savedData = {
-                title: document.querySelector('#title').value ? document.querySelector('#title').value : '',
-                gantt: savedGantt
-            }
-            let blob = new Blob([JSON.stringify(savedData, null, 2)], { type: "text/json;charset=utf-8" });
-            saveAs(blob, 'gantt.json');
-        });
-
-        let FORMAT = {
-            TASK_START: {
-                DATE_FORMAT: 'YYYY-MM-DD',
-                DATETIME_FORMAT: 'YYYY-MM-DD HH:mm',
-                OFFSET: 0
-            },
-            TASK_END: {
-                DATE_FORMAT: 'YYYY-MM-DD',
-                DATETIME_FORMAT: 'YYYY-MM-DD HH:mm',
-                OFFSET: -1
-            },
-            INPUT_START: {
-                DATE_FORMAT: 'YYYY-MM-DD',
-                DATETIME_FORMAT: 'YYYY-MM-DDTHH:mm',
-                OFFSET: 0
-            },
-            INPUT_END: {
-                DATE_FORMAT: 'YYYY-MM-DD',
-                DATETIME_FORMAT: 'YYYY-MM-DDTHH:mm',
-                OFFSET: -1
-            }
-        }
-
-        function format(tarDate, format) {
-            let tarDayjs = dayjs(tarDate);
-            if (tarDayjs.hour() == 0 && tarDayjs.minute() == 0) {
-                return tarDayjs.add(format.OFFSET, 'day').format(format.DATE_FORMAT);
-            }
-            return tarDayjs.format(format.DATETIME_FORMAT);
-        }
-
-        const selectElement = document.querySelector('#Load');
-        selectElement.addEventListener('change', (event) => {
-            var tarFile = event.target.files[0];
-
-            let reader = new FileReader();
-            reader.onload = function (event) {
-                // ファイルのテキストがここにプリントされる
-                savedData = JSON.parse(event.target.result);
-                document.querySelector('#title').value = savedData.title;
-                gantt.refresh(savedData.gantt);
-                tasks = savedData.gantt;
-            };
-            reader.readAsText(tarFile);
-        });
-    </script>
 
     <!-- Modal overlay -->
     <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center z-50">
@@ -513,159 +280,6 @@
         </div>
     </div>
 
-
-
-    <script>
-        var closemodal = document.querySelectorAll('.modal-open, .modal-close, .modal-overlay')
-        for (var i = 0; i < closemodal.length; i++) {
-            closemodal[i].addEventListener('click', toggleModal);
-        }
-
-        //画面上でdate ←→ datetimeを切り替えたときの処理。
-        function optionChange(tarId, type) {
-            const tarInput = document.getElementById(tarId);
-            let tarDayjs;
-            if (tarInput.type == 'date') {
-                tarDayjs = dayjs(tarInput.value, "YYYY-MM-DD");
-
-            } else {
-                tarDayjs = dayjs(tarInput.value, "YYYY-MM-DDTHH:mm");
-
-            }
-            if (type == 'date') {
-                tarInput.type = type;
-                tarInput.value = tarDayjs.format("YYYY-MM-DD");
-            } else {
-                tarInput.type = type;
-                tarInput.value = tarDayjs.format("YYYY-MM-DDTHH:mm");
-            }
-        }
-
-        document.onkeydown = function (evt) {
-            evt = evt || window.event;
-            var isEscape = false
-            if ("key" in evt) {
-                isEscape = (evt.key === "Escape" || evt.key === "Esc")
-            } else {
-                isEscape = (evt.keyCode === 27)
-            }
-            if (isEscape && document.body.classList.contains('modal-active')) {
-                toggleModal();
-            }
-        };
-
-        function toggleModal(event) {
-            event = event || window.event;
-            event.preventDefault();
-            const body = document.querySelector('body');
-            const modal = document.querySelector('.modal');
-            modal.classList.toggle('opacity-0');
-            modal.classList.toggle('pointer-events-none');
-            body.classList.toggle('modal-active');
-        }
-
-
-        const buttonApply = document.querySelector('#apply');
-        buttonApply.addEventListener('click', (event) => {
-            event.preventDefault();
-
-            let curForm = document.forms['inputform'];
-
-            // validate taskname
-            if (!curForm.elements['taskname'].value) {
-                curForm.elements['taskname'].classList.remove("border-gray-200");
-                curForm.elements['taskname'].classList.add("border-pink-700");
-                return;
-            } else {
-                curForm.elements['taskname'].classList.add("border-gray-200");
-                curForm.elements['taskname'].classList.remove("border-pink-700");
-            }
-            //validate start date, end date
-            if (curForm.elements['startdate'].value >= curForm.elements['enddate'].value) {
-                curForm.elements['startdate'].classList.remove("border-gray-200");
-                curForm.elements['startdate'].classList.add("border-pink-700");
-
-                curForm.elements['enddate'].classList.remove("border-gray-200");
-                curForm.elements['enddate'].classList.add("border-pink-700");
-                return;
-            } else {
-                curForm.elements['startdate'].classList.add("border-gray-200");
-                curForm.elements['startdate'].classList.remove("border-pink-700");
-
-                curForm.elements['enddate'].classList.add("border-gray-200");
-                curForm.elements['enddate'].classList.remove("border-pink-700");
-            }
-
-
-
-            // タスクIDの取得
-            let tarId = curForm.elements['taskId'].value;
-            // 対象タスクを抽出。なければ新規作成
-            let tarTask;
-            if (tarId) {
-                tarTask = tasks.find(element => element.id == tarId);
-            } else {
-                const maxTasks = tasks.reduce((a, b) => (a.id > b.id) ? a : b);
-                tarTask = { id: maxTasks ? String(Number(maxTasks.id) + 1) : '1' };
-            }
-            // 対象タスクに各種値の設定
-            tarTask.name = curForm.elements['taskname'].value;
-            if (curForm.elements['startOption'].value == 'date') {
-                tarTask.start = curForm.elements['startdate'].value;
-            } else {
-                let tarDayjs = dayjs(curForm.elements['startdate'].value, "YYYY-MM-DDTHH:mm");
-                tarTask.start = tarDayjs.format("YYYY-MM-DD HH:mm");
-            }
-            if (curForm.elements['endOption'].value == 'date') {
-                tarTask.end = curForm.elements['enddate'].value;
-            } else {
-                let tarDayjs = dayjs(curForm.elements['enddate'].value, "YYYY-MM-DDTHH:mm");
-                tarTask.end = tarDayjs.format("YYYY-MM-DD HH:mm");
-            }
-            tarTask.progress = curForm.elements['progress'].value;
-            const dependenciesOptions = document.querySelectorAll('select[name="dependencies"] option:checked');
-            const dependencies = [...dependenciesOptions].map((curOption) => curOption.value);
-            tarTask.dependencies = dependencies.join(",");
-
-            // ポジションを入れ替えるため、対象タスクを配列から除去
-            tasks = tasks.filter((curTask) => curTask.id != tarTask.id);
-            // 指定したポジションに挿入
-            const underTaskId = document.querySelector('select[name="position"] option:checked').value;
-            const position = tasks.findIndex((curTask) => curTask.id == underTaskId);
-            tasks.splice(position + 1, 0, tarTask);
-
-            gantt.refresh(tasks);
-            toggleModal();
-        });
-
-        const buttonDelete = document.querySelector('#delete');
-        buttonDelete.addEventListener('click', (event) => {
-            event.preventDefault();
-
-            let curForm = document.forms['inputform'];
-            let tarId = curForm.elements['taskId'].value;
-            tasks = tasks.reduce((accumulator, curTask) => {
-                // 対象タスクを除外
-                if (curTask.id == tarId) {
-                    return accumulator;
-                }
-                // dependenciesの参照も除外
-                curTask.dependencies.filter((dependency) => dependency != tarId);
-                accumulator.push(curTask);
-                return accumulator;
-            }, []);
-            gantt.refresh(tasks);
-            toggleModal();
-        });
-
-        const buttonClear = document.querySelector('#clear');
-        buttonClear.addEventListener('click', (event) => {
-            event.preventDefault();
-
-            const optionDependencies = document.querySelectorAll('select[name="dependencies"] option:checked');
-            optionDependencies.forEach((curOption) => curOption.selected = false);
-        });
-    </script>
 </body>
 
 </html>
