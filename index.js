@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     tasks = [
         {
             id: '1',
-            name: 'サンプル',
+            name: 'sample',
             start: dayjs(new Date()).format('YYYY-MM-DD'),
             end: dayjs(new Date()).add(1, 'day').format('YYYY-MM-DD'),
             progress: 20
@@ -105,12 +105,24 @@ function initCalendar(tarTasks) {
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
             tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
-            tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
+            if(info.event.end){
+                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
+            }else{
+                tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
+            }
             toggleTask(tarTask);
             //const tarTask = tasks.find(element => element.id == info.event.id);
         },
-        eventDragStop : function(info){
-            alert(info);
+        eventMouseLeave  : function(info){
+            console.log('leave')
+            const tarTask = tasks.find(element => element.id == info.event.id);
+            tarTask.name = info.event.title;
+            tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
+            if(info.event.end){
+                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
+            }else{
+                tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
+            }
         },
         dateClick: function (info) {
             toggleTask(
