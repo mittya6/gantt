@@ -36,22 +36,26 @@
             type="text" id="title" placeholder="title">
         <button class="ml-4 hover:scale-110 focus:outline-none flex justify-center px-4 py-2  font-bold cursor-pointer 
             rounded rounded-r-none
-            hover:bg-gray-900
-            bg-gray-700 
+            hover:bg-red-700
+            bg-red-700 
             text-sm text-gray-50 
             border duration-200 ease-in-out 
-            border-gray-900 transition"
-            onclick="document.querySelector('#main_calendar').classList.add('invisible','absolute');document.querySelector('#main_gantt').classList.remove('invisible','absolute');gantt.refresh(tasks)">
+            border-red-700 transition"
+            name="screenSwitch"
+            data-showid="main_gantt"
+            data-visibleid="main_calendar">
             Gantt
         </button>
         <button class="hover:scale-110 focus:outline-none flex justify-center px-4 py-2 font-bold cursor-pointer 
             rounded rounded-l-none 
-            hover:bg-gray-900
-            bg-gray-700 
+            hover:bg-red-700
+            bg-red-900 
             text-sm	text-gray-50 
             border duration-200 ease-in-out 
-            border-gray-700 transition"
-            onclick="document.querySelector('#main_gantt').classList.add('invisible','absolute');document.querySelector('#main_calendar').classList.remove('invisible','absolute');">
+            border-red-900 transition"
+            name="screenSwitch"
+            data-showid="main_calendar"
+            data-visibleid="main_gantt">
             Calendar
         </button>
     </nav>

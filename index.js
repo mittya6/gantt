@@ -3,18 +3,33 @@ let gantt;
 let calendar;
 let tasks;
 
+// ganttのCalendar切り替え処理
+window.addEventListener('DOMContentLoaded', (event) => {
+    let buttons = document.getElementsByName("screenSwitch");
+    buttons.forEach((curButton) => {
+        curButton.addEventListener('click', () => {
+            document.getElementById(curButton.dataset.visibleid).classList.add('invisible','absolute');
+            document.getElementById(curButton.dataset.showid).classList.remove('invisible','absolute');
+            buttons.forEach((tarButton) => {
+                tarButton.classList.remove('bg-red-700');
+                tarButton.classList.add('bg-red-900');
+            });
+            curButton.classList.remove('bg-red-900');
+            curButton.classList.add('bg-red-700');
+            gantt.refresh(tasks);
+        });
+    });
+});
 
 // ganttのduration押下時の処理
 window.addEventListener('DOMContentLoaded', (event) => {
     let buttons = document.getElementsByName("ganttDuration");
     buttons.forEach((curButton) => {
         curButton.addEventListener('click', () => {
-            let tarButtons = document.querySelectorAll("#durationButtons button");
-            tarButtons.forEach((tarButton) => {
+            buttons.forEach((tarButton) => {
                 tarButton.classList.remove('bg-gray-900');
                 tarButton.classList.add('bg-gray-700');
             });
-
             curButton.classList.remove('bg-gray-700');
             curButton.classList.add('bg-gray-900');
             gantt.change_view_mode(curButton.innerText);
