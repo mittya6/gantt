@@ -76,6 +76,8 @@ function initCalendar(tarTasks) {
         navLinks: true,
         businessHours: true,
         editable: true,
+        eventStartEditable: true,
+        eventResizableFromStart: true,
         locale: 'ja',
         customButtons: {
             custom1: {
@@ -85,21 +87,15 @@ function initCalendar(tarTasks) {
         },
         events: tarTasks.map((curTask)=>toEvent(curTask)),
         eventClick: function (info) {
-            console.log(info.event);
             const tarTask = tasks.find(element => element.id == info.event.id);
+            tarTask.name = info.event.title;
             tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
             tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
             toggleTask(tarTask);
-
-            //console.log(dayjs(info.event.end).add(2, 'day').toDate());
-            //if (!info.event.end) {
-            //    info.event.setEnd(dayjs(info.event.start).add(2, 'day').toDate());
-            //} else {
-            //    info.event.setEnd(dayjs(info.event.end).add(2, 'day').toDate());
-            //}
-            //https://fullcalendar.io/docs/Calendar-getEvents
-            //削除する場合
-            //info.event.remove();
+            //const tarTask = tasks.find(element => element.id == info.event.id);
+        },
+        eventDragStop : function(info){
+            alert(info);
         },
         dateClick: function (info) {
             toggleTask(
@@ -310,7 +306,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             curForm.elements['taskname'].classList.remove("border-pink-700");
         }
         //validate start date, end date
-        if (curForm.elements['startdate'].value >= curForm.elements['enddate'].value) {
+        if (curForm.elements['startdate'].value > curForm.elements['enddate'].value) {
             curForm.elements['startdate'].classList.remove("border-gray-200");
             curForm.elements['startdate'].classList.add("border-pink-700");
 
@@ -365,6 +361,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
             calendar.addEvent(toEvent(tarTask));
         }else{
             tarEvent.setProp( 'title', tarTask.name );
+            console.log(tarTask.start);
+            console.log(tarTask.end);
+            if(tarTask.start.length > 10 || tarTask.end.length > 10){
+                console.log("not all day");
+                tarEvent.setAllDay(false);
+            }
             tarEvent.setStart(format(tarTask.start,FORMAT.CALENDAR_VALUE));
             tarEvent.setEnd(format(tarTask.end,FORMAT.CALENDAR_VALUE, 1));
         }
