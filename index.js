@@ -83,7 +83,7 @@ function initCalendar(tarTasks) {
                 click: openTask
             }
         },
-        events: tasiksForCalendar(tarTasks),
+        events: tarTasks.map((curTask)=>toEvent(curTask)),
         eventClick: function (info) {
             console.log(info.event);
             const tarTask = tasks.find(element => element.id == info.event.id);
@@ -118,19 +118,13 @@ function initCalendar(tarTasks) {
     calendar.render();
 }
 
-function tasiksForCalendar(tasks) {
-    return tasks.map((curTask) => {
-        curTask.title = curTask.name;
-        if (curTask.end) {
-            if (curTask.end.length > 10) {
-                curTask.end = dayjs(curTask.end, "YYYY-MM-DD HH:mm").format("YYYY-MM-DDTHH:mm");
-            } else {
-                curTask.end = dayjs(curTask.end, "YYYY-MM-DD").add(1, 'day').format("YYYY-MM-DD");
-
-            }
-        }
-        return curTask;
-    });
+function toEvent(tarTask){
+    return{
+        id:tarTask.id,
+        title:tarTask.name,
+        start: format(tarTask.start, FORMAT.CALENDAR_VALUE),
+        end: format(tarTask.end, FORMAT.CALENDAR_VALUE, 1)
+    }
 }
 
 // onclick event for New Task
@@ -228,6 +222,10 @@ let FORMAT = {
         DATETIME_FORMAT: 'YYYY-MM-DD HH:mm',
     },
     INPUT_VALUE: {
+        DATE_FORMAT: 'YYYY-MM-DD',
+        DATETIME_FORMAT: 'YYYY-MM-DDTHH:mm',
+    },
+    CALENDAR_VALUE: {
         DATE_FORMAT: 'YYYY-MM-DD',
         DATETIME_FORMAT: 'YYYY-MM-DDTHH:mm',
     }
@@ -362,6 +360,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
         const position = tasks.findIndex((curTask) => curTask.id == underTaskId);
         tasks.splice(position + 1, 0, tarTask);
 
+        const tarEvent = calendar.getEventById(tarTask.id);
+        if(!tarEvent){
+            calendar.addEvent(toEvent(tarTask));
+        }else{
+            tarEvent.setProp( 'title', tarTask.name );
+            tarEvent.setStart(format(tarTask.start,FORMAT.CALENDAR_VALUE));
+            tarEvent.setEnd(format(tarTask.end,FORMAT.CALENDAR_VALUE, 1));
+        }
+        
         gantt.refresh(tasks);
         toggleModal();
     });
@@ -378,10 +385,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 return accumulator;
             }
             // dependenciesの参照も除外
-            curTask.dependencies.filter((dependency) => dependency != tarId);
+            curTask.dependencies = curTask.dependencies.filter((dependency) => dependency != tarId);
             accumulator.push(curTask);
             return accumulator;
         }, []);
+
+        const tarEvent = calendar.getEventById(tarId);
+        if(tarEvent){
+            tarEvent.remove();
+        }
         gantt.refresh(tasks);
         toggleModal();
     });
