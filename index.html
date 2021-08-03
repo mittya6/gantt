@@ -37,10 +37,10 @@
         <button class="ml-4 hover:scale-110 focus:outline-none flex justify-center px-4 py-2  font-bold cursor-pointer 
             rounded rounded-r-none
             hover:bg-red-700
-            bg-red-700 
+            bg-red-900 
             text-sm text-gray-50 
             border duration-200 ease-in-out 
-            border-red-700 transition"
+            border-red-900 transition"
             name="screenSwitch"
             data-showid="main_gantt"
             data-visibleid="main_calendar">
@@ -49,17 +49,17 @@
         <button class="hover:scale-110 focus:outline-none flex justify-center px-4 py-2 font-bold cursor-pointer 
             rounded rounded-l-none 
             hover:bg-red-700
-            bg-red-900 
+            bg-red-700 
             text-sm	text-gray-50 
             border duration-200 ease-in-out 
-            border-red-900 transition"
+            border-red-700 transition"
             name="screenSwitch"
             data-showid="main_calendar"
             data-visibleid="main_gantt">
             Calendar
         </button>
     </nav>
-    <main id="main_gantt" class="px-8">
+    <main id="main_gantt" class="px-8 invisible absolute">
         <nav>
             <div>
                 <div class="flex m-2" id="durationButtons">
@@ -117,10 +117,10 @@
         </nav>
         <svg id="gantt"></svg>
     </main>
-    <main id="main_calendar" class="px-8 invisible">
+    <main id="main_calendar" class="px-8">
         <div id='calendar'></div>
     </main>
-    <nav class=" bg-white rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between z-50 bg-transparent">
+    <nav class="rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between z-50 bg-transparent">
         <div>
             <ul>
                 <li class="inline-block">

@@ -8,8 +8,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
     let buttons = document.getElementsByName("screenSwitch");
     buttons.forEach((curButton) => {
         curButton.addEventListener('click', () => {
-            document.getElementById(curButton.dataset.visibleid).classList.add('invisible','absolute');
-            document.getElementById(curButton.dataset.showid).classList.remove('invisible','absolute');
+            document.getElementById(curButton.dataset.visibleid).classList.add('invisible', 'absolute');
+            document.getElementById(curButton.dataset.showid).classList.remove('invisible', 'absolute');
             buttons.forEach((tarButton) => {
                 tarButton.classList.remove('bg-red-700');
                 tarButton.classList.add('bg-red-900');
@@ -17,6 +17,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             curButton.classList.remove('bg-red-900');
             curButton.classList.add('bg-red-700');
             gantt.refresh(tasks);
+            calendar.destroy();
+            initCalendar(tasks.map((cutTask)=> toTaskFromGanttTask(cutTask)));
+            
         });
     });
 });
@@ -60,7 +63,9 @@ function initGant(tarTasks) {
         on_click: (task) => {
         },
         on_date_change: function (task, start, end) {
-            //console.log(task, start, end);
+            const tarTask = tasks.find(element => element.id == task.id);
+            tarTask.start = format(start,FORMAT.TASK_VALUE);
+            tarTask.end = format(end,FORMAT.TASK_VALUE,-1);
         },
         on_progress_change: function (task, progress) {
             //console.log(task, progress);
@@ -100,38 +105,37 @@ function initCalendar(tarTasks) {
                 click: openTask
             }
         },
-        events: tarTasks.map((curTask)=>toEvent(curTask)),
+        events: tarTasks.map((curTask) => toEvent(curTask)),
         eventClick: function (info) {
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
             tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
-            if(info.event.end){
-                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
-            }else{
+            if (info.event.end) {
+                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE, -1);
+            } else {
                 tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
             }
             toggleTask(tarTask);
-            //const tarTask = tasks.find(element => element.id == info.event.id);
         },
-        eventResize : function(info){
+        eventResize: function (info) {
             console.log('resize')
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
             tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
-            if(info.event.end){
-                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
-            }else{
+            if (info.event.end) {
+                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE, -1);
+            } else {
                 tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
             }
         },
-        eventDrop: function(info){
+        eventDrop: function (info) {
             console.log(info)
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
             tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
-            if(info.event.end){
-                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
-            }else{
+            if (info.event.end) {
+                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE, -1);
+            } else {
                 tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
             }
         },
@@ -152,12 +156,23 @@ function initCalendar(tarTasks) {
     calendar.render();
 }
 
-function toEvent(tarTask){
-    return{
-        id:tarTask.id,
-        title:tarTask.name,
+function toEvent(tarTask) {
+    return {
+        id: tarTask.id,
+        title: tarTask.name,
         start: format(tarTask.start, FORMAT.CALENDAR_VALUE),
         end: format(tarTask.end, FORMAT.CALENDAR_VALUE, 1)
+    }
+}
+
+function toTaskFromGanttTask(curTask) {
+    return {
+        id: curTask.id,
+        name: curTask.name,
+        start: format(curTask._start, FORMAT.TASK_VALUE),
+        end: format(curTask._end, FORMAT.TASK_VALUE, -1),
+        progress: curTask.progress,
+        dependencies: curTask.dependencies.join(',')
     }
 }
 
@@ -210,21 +225,11 @@ function toggleTask(tarTask) {
 
 // onclick event for Save & Load
 window.addEventListener('DOMContentLoaded', (event) => {
-
     const save = document.querySelector('#Save');
     save.addEventListener('click', () => {
         event.preventDefault();
 
-        let savedGantt = tasks.map((curTask) => {
-            return {
-                id: curTask.id,
-                name: curTask.name,
-                start: format(curTask._start, FORMAT.TASK_VALUE),
-                end: format(curTask._end, FORMAT.TASK_VALUE, -1),
-                progress: curTask.progress,
-                dependencies: curTask.dependencies.join(',')
-            }
-        });
+        let savedGantt = tasks.map((curTask) => toTaskFromGanttTask(curTask));
         let savedData = {
             title: document.querySelector('#title').value ? document.querySelector('#title').value : '',
             gantt: savedGantt
@@ -397,20 +402,18 @@ window.addEventListener('DOMContentLoaded', (event) => {
         tasks.splice(position + 1, 0, tarTask);
 
         const tarEvent = calendar.getEventById(tarTask.id);
-        if(!tarEvent){
+        if (!tarEvent) {
             calendar.addEvent(toEvent(tarTask));
-        }else{
-            tarEvent.setProp( 'title', tarTask.name );
-            console.log(tarTask.start);
-            console.log(tarTask.end);
-            if(tarTask.start.length > 10 || tarTask.end.length > 10){
+        } else {
+            tarEvent.setProp('title', tarTask.name);
+            if (tarTask.start.length > 10 || tarTask.end.length > 10) {
                 console.log("not all day");
                 tarEvent.setAllDay(false);
             }
-            tarEvent.setStart(format(tarTask.start,FORMAT.CALENDAR_VALUE));
-            tarEvent.setEnd(format(tarTask.end,FORMAT.CALENDAR_VALUE, 1));
+            tarEvent.setStart(format(tarTask.start, FORMAT.CALENDAR_VALUE));
+            tarEvent.setEnd(format(tarTask.end, FORMAT.CALENDAR_VALUE, 1));
         }
-        
+
         gantt.refresh(tasks);
         toggleModal();
     });
@@ -433,7 +436,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }, []);
 
         const tarEvent = calendar.getEventById(tarId);
-        if(tarEvent){
+        if (tarEvent) {
             tarEvent.remove();
         }
         gantt.refresh(tasks);
