@@ -29,7 +29,7 @@
     </style>
 </head>
 
-<body class="flex flex-col">
+<body class="flex flex-col overflow-x-hidden">
     <nav class="flex bg-white shadow-lg py-2 mx-8 mb-4">
         <input
             class="appearance-none rounded flex-1  px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -59,7 +59,6 @@
             Calendar
         </button>
     </nav>
-
     <main id="main_gantt" class="px-8">
         <nav>
             <div>
@@ -121,7 +120,7 @@
     <main id="main_calendar" class="px-8 invisible">
         <div id='calendar'></div>
     </main>
-    <nav class="w-screen bg-white rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between">
+    <nav class=" bg-white rounded py-4 px-8 shadow-lg fixed bottom-0 flex justify-between z-50 bg-transparent">
         <div>
             <ul>
                 <li class="inline-block">

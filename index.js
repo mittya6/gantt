@@ -113,8 +113,19 @@ function initCalendar(tarTasks) {
             toggleTask(tarTask);
             //const tarTask = tasks.find(element => element.id == info.event.id);
         },
-        eventMouseLeave  : function(info){
-            console.log('leave')
+        eventResize : function(info){
+            console.log('resize')
+            const tarTask = tasks.find(element => element.id == info.event.id);
+            tarTask.name = info.event.title;
+            tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
+            if(info.event.end){
+                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE,-1);
+            }else{
+                tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
+            }
+        },
+        eventDrop: function(info){
+            console.log(info)
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
             tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
@@ -232,8 +243,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             // ファイルのテキストがここにプリントされる
             savedData = JSON.parse(event.target.result);
             document.querySelector('#title').value = savedData.title;
-            gantt.refresh(savedData.gantt);
             tasks = savedData.gantt;
+            gantt.refresh(tasks);
+            calendar.destroy();
+            initCalendar(tasks);
         };
         reader.readAsText(tarFile);
     });
