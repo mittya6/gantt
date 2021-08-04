@@ -63,6 +63,7 @@ function initGant(tarTasks) {
         on_click: (task) => {
         },
         on_date_change: function (task, start, end) {
+            console.log('on_date_change');
             const tarTask = tasks.find(element => element.id == task.id);
             tarTask.start = format(start,FORMAT.TASK_VALUE);
             tarTask.end = format(end,FORMAT.TASK_VALUE,-1);
@@ -74,9 +75,10 @@ function initGant(tarTasks) {
             //console.log(mode);
         },
         custom_popup_html: function (task) {
+            console.log('custom_popup_html');
             event.stopPropagation();
-            task.start = format(task._start, FORMAT.INPUT_VALUE);
-            task.end = format(task._end, FORMAT.INPUT_VALUE, -1);
+            task.start = format(task._start, FORMAT.TASK_VALUE);
+            task.end = format(task._end, FORMAT.TASK_VALUE, -1);
             toggleTask(task);
             return '';
         }
@@ -107,45 +109,49 @@ function initCalendar(tarTasks) {
         },
         events: tarTasks.map((curTask) => toEvent(curTask)),
         eventClick: function (info) {
+            console.log('eventClick');
+            console.log(info.event);
+
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
-            tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
+            tarTask.start = format(info.event.start, FORMAT.TASK_VALUE);
             if (info.event.end) {
-                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE, -1);
+                tarTask.end = format(info.event.end, FORMAT.TASK_VALUE, -1);
             } else {
-                tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
+                tarTask.end = format(info.event.start, FORMAT.TASK_VALUE);
             }
             toggleTask(tarTask);
         },
         eventResize: function (info) {
-            console.log('resize')
+            console.log('eventResize');
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
-            tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
+            tarTask.start = format(info.event.start, FORMAT.TASK_VALUE);
             if (info.event.end) {
-                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE, -1);
+                tarTask.end = format(info.event.end, FORMAT.TASK_VALUE, -1);
             } else {
-                tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
+                tarTask.end = format(info.event.start, FORMAT.TASK_VALUE);
             }
         },
         eventDrop: function (info) {
-            console.log(info)
+            console.log('eventDrop');
             const tarTask = tasks.find(element => element.id == info.event.id);
             tarTask.name = info.event.title;
-            tarTask.start = format(info.event.start, FORMAT.INPUT_VALUE);
+            tarTask.start = format(info.event.start, FORMAT.TASK_VALUE);
             if (info.event.end) {
-                tarTask.end = format(info.event.end, FORMAT.INPUT_VALUE, -1);
+                tarTask.end = format(info.event.end, FORMAT.TASK_VALUE, -1);
             } else {
-                tarTask.end = format(info.event.start, FORMAT.INPUT_VALUE);
+                tarTask.end = format(info.event.start, FORMAT.TASK_VALUE);
             }
         },
         dateClick: function (info) {
+            console.log('dateClick');
             toggleTask(
                 {
                     id: '',
                     name: '',
-                    start: format(info.dateStr, FORMAT.INPUT_VALUE),
-                    end: format(info.dateStr, FORMAT.INPUT_VALUE),
+                    start: format(info.dateStr, FORMAT.TASK_VALUE),
+                    end: format(info.dateStr, FORMAT.TASK_VALUE),
                     progress: 0,
                     dependencies: []
                 }
@@ -200,10 +206,10 @@ function toggleTask(tarTask) {
     let curForm = document.forms['inputform'];
     curForm.elements['taskname'].value = tarTask.name;
     curForm.elements['startdate'].type = tarTask.start.length <= 10 ? 'date' : 'datetime-local';
-    curForm.elements['startdate'].value = tarTask.start;
+    curForm.elements['startdate'].value = format(tarTask.start,FORMAT.INPUT_VALUE);
     curForm.elements['startOption'].value = curForm.elements['startdate'].type;
     curForm.elements['enddate'].type = tarTask.end.length <= 10 ? 'date' : 'datetime-local';
-    curForm.elements['enddate'].value = tarTask.end;
+    curForm.elements['enddate'].value = format(tarTask.end,FORMAT.INPUT_VALUE);
     curForm.elements['endOption'].value = curForm.elements['enddate'].type;
     curForm.elements['progress'].value = tarTask.progress;
     curForm.elements['taskId'].value = tarTask.id;
@@ -338,6 +344,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const buttonApply = document.querySelector('#apply');
     buttonApply.addEventListener('click', (event) => {
         event.preventDefault();
+        console.log("apply");
 
         let curForm = document.forms['inputform'];
 
@@ -407,7 +414,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
         } else {
             tarEvent.setProp('title', tarTask.name);
             if (tarTask.start.length > 10 || tarTask.end.length > 10) {
-                console.log("not all day");
                 tarEvent.setAllDay(false);
             }
             tarEvent.setStart(format(tarTask.start, FORMAT.CALENDAR_VALUE));
