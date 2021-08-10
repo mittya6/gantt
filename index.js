@@ -226,6 +226,11 @@ function toggleTask(tarTask) {
             dependenciesSelect.appendChild(new Option(curTask.name, curTask.id, tarTask.dependencies.includes(curTask.id), tarTask.dependencies.includes(curTask.id)));
             positionSelect.appendChild(new Option(curTask.name, curTask.id, i == position, i == position));
         });
+    if(tasks.length==1 || !tarTask.id){
+        document.querySelector('#delete').classList.add('hidden');
+    }else{
+        document.querySelector('#delete').classList.remove('hidden');
+    }
     toggleModal();
 }
 
