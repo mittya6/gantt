@@ -18,8 +18,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             curButton.classList.add('bg-red-700');
             gantt.refresh(tasks);
             calendar.destroy();
-            initCalendar(tasks.map((cutTask)=> toTaskFromGanttTask(cutTask)));
-            
+            initCalendar(tasks.map((cutTask) => toTaskFromGanttTask(cutTask)));
+
         });
     });
 });
@@ -65,8 +65,8 @@ function initGant(tarTasks) {
         on_date_change: function (task, start, end) {
             console.log('on_date_change');
             const tarTask = tasks.find(element => element.id == task.id);
-            tarTask.start = format(start,FORMAT.TASK_VALUE);
-            tarTask.end = format(end,FORMAT.TASK_VALUE,-1);
+            tarTask.start = format(start, FORMAT.TASK_VALUE);
+            tarTask.end = format(end, FORMAT.TASK_VALUE, -1);
         },
         on_progress_change: function (task, progress) {
             //console.log(task, progress);
@@ -206,10 +206,10 @@ function toggleTask(tarTask) {
     let curForm = document.forms['inputform'];
     curForm.elements['taskname'].value = tarTask.name;
     curForm.elements['startdate'].type = tarTask.start.length <= 10 ? 'date' : 'datetime-local';
-    curForm.elements['startdate'].value = format(tarTask.start,FORMAT.INPUT_VALUE);
+    curForm.elements['startdate'].value = format(tarTask.start, FORMAT.INPUT_VALUE);
     curForm.elements['startOption'].value = curForm.elements['startdate'].type;
     curForm.elements['enddate'].type = tarTask.end.length <= 10 ? 'date' : 'datetime-local';
-    curForm.elements['enddate'].value = format(tarTask.end,FORMAT.INPUT_VALUE);
+    curForm.elements['enddate'].value = format(tarTask.end, FORMAT.INPUT_VALUE);
     curForm.elements['endOption'].value = curForm.elements['enddate'].type;
     curForm.elements['progress'].value = tarTask.progress;
     curForm.elements['taskId'].value = tarTask.id;
@@ -226,9 +226,9 @@ function toggleTask(tarTask) {
             dependenciesSelect.appendChild(new Option(curTask.name, curTask.id, tarTask.dependencies.includes(curTask.id), tarTask.dependencies.includes(curTask.id)));
             positionSelect.appendChild(new Option(curTask.name, curTask.id, i == position, i == position));
         });
-    if(tasks.length==1 || !tarTask.id){
+    if (tasks.length == 1 || !tarTask.id) {
         document.querySelector('#delete').classList.add('hidden');
-    }else{
+    } else {
         document.querySelector('#delete').classList.remove('hidden');
     }
     toggleModal();
@@ -460,5 +460,39 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
         const optionDependencies = document.querySelectorAll('select[name="dependencies"] option:checked');
         optionDependencies.forEach((curOption) => curOption.selected = false);
+    });
+});
+
+
+window.addEventListener('DOMContentLoaded', (event) => {
+
+
+
+    document.querySelectorAll('main').forEach((curMain) => {
+        curMain.addEventListener("drop", (event) => {
+            event.preventDefault();
+
+ 
+
+
+            let reader = new FileReader();
+            reader.onload = function (event) {
+                // ファイルのテキストがここにプリントされる
+                savedData = JSON.parse(event.target.result);
+                document.querySelector('#title').value = savedData.title;
+                tasks = savedData.gantt;
+                gantt.refresh(tasks);
+                calendar.destroy();
+                initCalendar(tasks);
+            };
+            reader.readAsText(event.dataTransfer.files[0]);
+        });
+
+        curMain.addEventListener("dragover",(event) => {
+            event.preventDefault();
+            //alert('dragover')
+ 
+          });
+
     });
 });
