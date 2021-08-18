@@ -49,7 +49,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             name: 'sample',
             start: dayjs(new Date()).format('YYYY-MM-DD'),
             end: dayjs(new Date()).add(1, 'day').format('YYYY-MM-DD'),
-            progress: 20
+            progress: 20,
+            color: '#ff0033'
         }
     ];
     initGant(tasks);
@@ -227,9 +228,10 @@ function toggleTask(tarTask) {
             positionSelect.appendChild(new Option(curTask.name, curTask.id, i == position, i == position));
         });
     if (tasks.length == 1 || !tarTask.id) {
-        document.querySelector('#delete').classList.add('hidden');
+        document.querySelector('#delete').parentElement.classList.add('hidden');
+        //document.querySelector('#delete').classList.add('hidden');
     } else {
-        document.querySelector('#delete').classList.remove('hidden');
+        document.querySelector('#delete').parentElement.classList.remove('hidden');
     }
     toggleModal();
 }
@@ -384,7 +386,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         if (tarId) {
             tarTask = tasks.find(element => element.id == tarId);
         } else {
-            const maxTasks = tasks.reduce((a, b) => (a.id > b.id) ? a : b);
+            const maxTasks = tasks.reduce((a, b) => (Number(a.id) > Number(b.id)) ? a : b);
             tarTask = { id: maxTasks ? String(Number(maxTasks.id) + 1) : '1' };
         }
         // 対象タスクに各種値の設定
